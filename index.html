@@ -125,8 +125,20 @@
             font-size: 18px;
             color: var(--text-secondary);
             max-width: 640px;
-            margin-bottom: 36px;
+            margin-bottom: 16px;
             line-height: 1.55;
+        }
+
+        .hero-custom {
+            font-size: var(--text-base);
+            color: var(--accent);
+            max-width: 640px;
+            margin-bottom: 36px;
+            line-height: 1.5;
+            padding: 14px 20px;
+            background: rgba(88,166,255,0.06);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
         }
 
         /* Stats row */
@@ -257,8 +269,21 @@
             box-shadow: 0 4px 20px rgba(88,166,255,0.3);
         }
 
-        .cta-secondary { font-size: var(--text-sm); color: var(--text-secondary); }
-        .cta-secondary a { color: var(--accent); }
+        .cta-secondary {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+        .cta-secondary a {
+            color: var(--text-secondary);
+            text-decoration: underline;
+            text-decoration-color: var(--border);
+            text-underline-offset: 3px;
+            transition: color 0.15s;
+        }
+        .cta-secondary a:hover {
+            color: var(--accent);
+            text-decoration-color: var(--accent);
+        }
 
         /* ===== DOCS LAYOUT ===== */
         .docs-layout {
@@ -283,6 +308,31 @@
         .docs-sidebar { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 
         .docs-nav { font-size: var(--text-xs); }
+
+        /* Details-аккордеон для мобильного TOC */
+        .sidebar-details { padding-left: 0; }
+        .sidebar-summary {
+            display: none;
+            cursor: pointer;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text);
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            list-style: none;
+            user-select: none;
+        }
+        .sidebar-summary::before {
+            content: '▸';
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            margin-right: 8px;
+            display: inline-block;
+            transition: transform 0.15s;
+        }
+        .sidebar-details[open] .sidebar-summary::before { transform: rotate(90deg); }
 
         .docs-sidebar-title {
             font-size: var(--text-xs);
@@ -707,6 +757,26 @@
 
         .legend-chip { padding: 3px 10px; border-radius: 4px; }
 
+        /* ===== INLINE CTA ===== */
+        .cta-inline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 28px;
+            background: linear-gradient(180deg, rgba(88,166,255,0.06) 0%, var(--bg-card) 100%);
+            border: 1px solid rgba(88,166,255,0.2);
+            border-radius: 12px;
+            margin: 32px 0;
+            text-align: center;
+        }
+
+        .cta-inline p {
+            font-size: var(--text-lg);
+            color: var(--text);
+            margin: 0;
+        }
+
         /* ===== BACK TO TOP ===== */
         .back-to-top {
             position: fixed;
@@ -757,6 +827,8 @@
                 margin-bottom: 24px;
                 border-bottom: 1px solid var(--border);
             }
+
+            .sidebar-summary { display: block; margin-bottom: 12px; }
 
             .docs-nav {
                 display: grid;
@@ -898,6 +970,9 @@
         <p class="hero-desc">
             Модераторы получают список проблем и решений. Участники чата читают один короткий дайджест вместо истории за весь день.
         </p>
+        <p class="hero-custom">
+            <strong>Это готовое решение, которое я разверну под ваш Telegram-чат</strong> — с вашими правилами отбора тем, вашей документацией и вашими модераторами.
+        </p>
 
         <div class="hero-stats">
             <div class="hero-stat">
@@ -946,7 +1021,9 @@
 
         <!-- ===== SIDEBAR TOC ===== -->
         <aside class="docs-sidebar">
-            <div class="docs-sidebar-title">На этой странице</div>
+            <details class="sidebar-details" open>
+                <summary class="sidebar-summary">Оглавление</summary>
+                <div class="docs-sidebar-title">На этой странице</div>
             <nav class="docs-nav">
                 <div class="docs-nav-group">
                     <div class="docs-nav-group-title">🚀 Обзор</div>
@@ -1006,6 +1083,7 @@
                     </ul>
                 </div>
             </nav>
+            </details>
         </aside>
 
         <!-- ===== MAIN CONTENT ===== -->
@@ -1526,6 +1604,11 @@ flowchart TD
                         <strong>Параметры:</strong> <code>temperature: 0</code>, <code>reasoning: { effort: "high" }</code><br>
                         <strong>Fallback-цепочка:</strong> <code>GMI → DeepSeek</code> (исключая <code>Cloudflare</code>, <code>DeepInfra</code>)
                     </p>
+
+                    <div class="cta-inline">
+                        <p>Готовы развернуть такой дайджест для вашего чата?</p>
+                        <a href="https://t.me/dmn_101" class="cta-button">Написать автору →</a>
+                    </div>
                 </section>
             </div>
 
