@@ -902,6 +902,17 @@
     <script>
         // Scrollspy + back-to-top
         document.addEventListener('DOMContentLoaded', function() {
+
+            // --- Sidebar details: open on desktop, closed on mobile ---
+            const sidebarDetails = document.querySelector('.sidebar-details');
+            function syncSidebarDetails() {
+                if (!sidebarDetails) return;
+                sidebarDetails.open = window.innerWidth > 1024;
+            }
+            syncSidebarDetails();
+            window.addEventListener('resize', syncSidebarDetails);
+
+            // --- Scrollspy ---
             // --- Scrollspy ---
             const sections = document.querySelectorAll('.docs-section[id]');
             const navLinks = document.querySelectorAll('.docs-nav-group a');
