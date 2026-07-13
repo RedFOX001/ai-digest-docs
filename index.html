@@ -675,6 +675,49 @@
             });
         });
     </script>
+
+    <script>
+    // Auto-generate IDs for h2 elements (for TOC anchor navigation)
+    document.addEventListener('DOMContentLoaded', function() {
+        const sectionMap = {
+            'обзор': 'overview',
+            'архитектура конвейера': 'pipeline',
+            'как это работает': 'how-it-works',
+            '🎯 правила отбора тем: tier 1 и tier 2': 'tier-rules',
+            '📊 воронка качества: от сырого лога до дайджеста': 'quality-funnel',
+            'этапы llm-конвейера': 'llm-stages',
+            '🔄 трансформация данных по этапам': 'data-shape',
+            'ключевые метрики': 'key-metrics',
+            'архитектурные особенности': 'arch-features',
+            '💵 стоимость и окупаемость': 'cost',
+            '⚔️ детекция cross-user конфликтов: как это работает': 'conflict',
+            'технический стек': 'tech-stack',
+            'система диагностики': 'diagnostic',
+            '📤 два канала публикации: модераторы и публичный канал': 'two-tier',
+            'статусы в дайджесте': 'statuses',
+            '📐 структура дайджеста: 4 секции, точные правила': 'digest-structure',
+            '📋 пример с подсветкой: реальный дайджест со всеми блоками': 'annotated-example',
+            '🛠️ config reference: что и где менять': 'config',
+            '🗄️ ddl таблицы digest_runs': 'ddl',
+            'известные ограничения': 'limitations',
+            '📖 глоссарий терминов': 'glossary',
+            'контакты': 'contact'
+        };
+
+        function getSectionId(text) {
+            const key = text.toLowerCase().trim();
+            if (sectionMap[key]) return sectionMap[key];
+            return key
+                .replace(/[^\w\sа-яё-]/g, '')
+                .replace(/\s+/g, '-')
+                .substring(0, 50);
+        }
+
+        document.querySelectorAll('.docs-section h2').forEach(h2 => {
+            if (!h2.id) h2.id = getSectionId(h2.textContent);
+        });
+    });
+    </script>
 </head>
 <body>
 
