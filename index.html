@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-дайджест чата поддержки — Документация решения</title>
+    <meta name="description" content="Техническая документация n8n-воркфлоу для автоматического ежедневного дайджеста Telegram-чата поддержки с многоэтапной LLM-верификацией.">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg-card: #161b22;
+            --bg-hover: #1c2128;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #bc8cff;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ============= INTRO BLOCK ============= */
+        .intro {
+            padding: 60px 0 40px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 40px;
+        }
+
+        .intro-tag {
+            display: inline-block;
+            background: #1f2937;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .intro h1 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.75px;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .intro h1 .highlight {
+            color: var(--accent);
+        }
+
+        .intro .desc {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .intro .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 640px) {
+            .intro .cards { grid-template-columns: 1fr; }
+        }
+
+        .intro .card-compare {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .intro .card-compare .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .intro .card-compare .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .intro .card-compare .card-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .intro .cta-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .intro .cta-button {
+            display: inline-block;
+            padding: 10px 24px;
+            background: var(--accent);
+            color: #0d1117;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: opacity 0.15s;
+        }
+
+        .intro .cta-button:hover {
+            opacity: 0.85;
+            text-decoration: none;
+        }
+
+        .intro .cta-secondary {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .intro .cta-secondary a {
+            color: var(--accent);
+        }
+
+        /* ============= MAIN DOCS ============= */
+
+        .docs-section {
+            scroll-margin-top: 24px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 40px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 24px 0 12px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        strong {
+            color: var(--text);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 640px) {
+            .card-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .card h3 {
+            margin: 0 0 8px;
+            font-size: 15px;
+        }
+
+        .card .stage {
+            font-size: 12px;
+            color: var(--accent-purple);
+            font-family: var(--font-mono);
+            margin-bottom: 4px;
+        }
+
+        .card p {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .mermaid-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+        }
+
+        .mermaid-wrapper svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        td:first-child {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        tr:hover td {
+            background: var(--bg-hover);
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            background: #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-green);
+        }
+
+        pre {
+            background: #1f2937;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.green { background: #132f1a; color: var(--accent-green); border: 1px solid #1a4a2a; }
+        .status-badge.yellow { background: #2d2410; color: var(--accent-yellow); border: 1px solid #4b3a16; }
+        .status-badge.red { background: #2d1414; color: var(--accent-red); border: 1px solid #4b1d1d; }
+
+        .feature-list {
+            list-style: none;
+            margin: 16px 0;
+        }
+
+        .feature-list li {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .feature-list li strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .step-list {
+            list-style: none;
+            counter-reset: step;
+            margin: 20px 0;
+        }
+
+        .step-list li {
+            counter-increment: step;
+            padding: 14px 16px 14px 52px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            position: relative;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .step-list li::before {
+            content: counter(step);
+            position: absolute;
+            left: 16px;
+            top: 14px;
+            width: 26px;
+            height: 26px;
+            background: #1f2937;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .step-list li strong {
+            color: var(--text);
+        }
+
+        .author-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            margin: 24px 0;
+        }
+
+        .author-bar .label {
+            color: var(--text-secondary);
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            margin-top: 60px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ============= INTRO BLOCK ============= -->
+    <div class="intro">
+        <div class="intro-tag">AI-дайджест для чатов поддержки · v0.24 · n8n</div>
+
+        <h1>
+            Каждое утро — готовый отчёт о том,<br>
+            <span class="highlight">что сломалось в чате вчера</span>
+        </h1>
+
+        <p class="desc">
+            Вы больше не читаете тысячи сообщений в чате поддержки, чтобы понять,
+            у кого что не работает и что уже помогло. Сервис делает это за вас —
+            и присылает готовый дайджест с ссылками на реальные сообщения.
+        </p>
+
+        <div class="cards">
+            <div class="card-compare">
+                <div class="icon">😩</div>
+                <div class="card-title">Было</div>
+                <div class="card-text">Модератор вручную читает чат час в день, пропускает половину жалоб</div>
+            </div>
+            <div class="card-compare">
+                <div class="icon">✅</div>
+                <div class="card-title">Стало</div>
+                <div class="card-text">Раз в день приходит готовый отчёт: что случилось, что решили, что нового</div>
+            </div>
+            <div class="card-compare">
+                <div class="icon">🔒</div>
+                <div class="card-title">Без выдумок</div>
+                <div class="card-text">Каждый пункт — ссылка на реальное сообщение, ничего не придумано</div>
+            </div>
+        </div>
+
+        <div class="cta-row">
+            <a href="https://t.me/dmn_101" class="cta-button">Написать автору @dmn_101</a>
+            <span class="cta-secondary">или <a href="#docs">читать техническую документацию ↓</a></span>
+        </div>
+    </div>
+
+    <!-- ============= DOCS CONTENT ============= -->
+    <div class="docs-section" id="docs">
+
+        <!-- Author -->
+        <div class="author-bar">
+            <span class="label">Автор решения:</span>
+            <a href="https://t.me/dmn_101">@dmn_101</a>
+            <span style="color: var(--text-secondary);">·</span>
+            <span class="label">По вопросам кастомизации и внедрения</span>
+        </div>
+
+        <!-- Overview -->
+        <section>
+            <h2>Обзор</h2>
+            <p>
+                Это n8n-воркфлоу, который каждую ночь забирает историю Telegram-чата поддержки за
+                прошедшие МСК-сутки, прогоняет через <strong>5 LLM-вызовов</strong> с двумя независимыми
+                критиками и верификацией по официальной документации, и публикует готовый
+                структурированный дайджест — в чат модераторов и в публичный канал.
+            </p>
+            <p>
+                Ключевое отличие от простых AI-суммаризаторов — <strong>проверяемость</strong>: каждая
+                тема обязана иметь ссылку на реальное сообщение, каждое решение проверяется
+                отдельным LLM-критиком, а затем сверяется с документацией проекта.
+            </p>
+        </section>
+
+        <!-- Pipeline diagram -->
+        <section>
+            <h2>Архитектура конвейера</h2>
+            <div class="mermaid-wrapper">
+                <pre class="mermaid" style="background: transparent; border: none; padding: 0;">
+flowchart LR
+    A["📅 Schedule<br/>00:21 MSK"] --> B["📥 Get chat<br/>history"]
+    B --> C["🔍 Filter<br/>yesterday"]
+    C --> D{"Messages<br/>> 0?"}
+    D -->|No| E["⏹ Stop"]
+    D -->|Yes| F["📝 Format<br/>for AI"]
+    F --> G["🤖 LLM #1<br/>Extract topics"]
+    G --> H["🤖 LLM #2<br/>Critic #1"]
+    H --> I["🔀 Splitter<br/>per-topic"]
+    I --> J["🤖 LLM #3<br/>Critic #2<br/>per-topic"]
+    J --> K["🔗 Merge<br/>topics"]
+    K --> L["📖 Fetch<br/>README + FAQ"]
+    L --> M["🤖 LLM #4<br/>Verify by<br/>docs"]
+    M --> N["🤖 LLM #5<br/>Final<br/>generator"]
+    N --> O["✅ Code<br/>validator<br/>(0 tokens)"]
+    O --> P["📊 Logging<br/>+ SQL"]
+    P --> Q["📨 Send to<br/>moderators"]
+    Q --> R["🧹 Clean<br/>for channel"]
+    R --> S["📨 Send to<br/>public channel"]
+
+    style A fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style B fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style C fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style D fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style E fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style F fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style G fill:#132f1a,stroke:#1a4a2a,color:#3fb950
+    style H fill:#132f1a,stroke:#1a4a2a,color:#3fb950
+    style I fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style J fill:#132f1a,stroke:#1a4a2a,color:#3fb950
+    style K fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style L fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style M fill:#132f1a,stroke:#1a4a2a,color:#3fb950
+    style N fill:#132f1a,stroke:#1a4a2a,color:#3fb950
+    style O fill:#2d2410,stroke:#4b3a16,color:#d29922
+    style P fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style Q fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style R fill:#1f2937,stroke:#30363d,color:#e6edf3
+    style S fill:#1f2937,stroke:#30363d,color:#e6edf3
+                </pre>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section>
+            <h2>Как это работает</h2>
+
+            <ol class="step-list">
+                <li>
+                    <strong>Сбор и фильтрация данных</strong><br>
+                    Workflow забирает историю чата через Telegram GramPro API, отфильтровывая
+                    сообщения ботов, предыдущие дайджесты (по маркеру <code>📋 Дайджест</code>
+                    и <code>🔗</code>) и сообщения вне временного окна. После фильтрации
+                    формируется структурированный лог с индексом сообщений и списком
+                    anchor-кандидатов — сообщений с признаками жалоб.
+                </li>
+                <li>
+                    <strong>Извлечение тем (LLM #1 — DeepSeek V4 Flash)</strong><br>
+                    Модель получает индекс, anchor-кандидаты и полный лог чата. Извлекает
+                    до 12 проблем, 5 советов и релизы по строгим Tier-правилам. Поле
+                    <code>solution</code> на этом этапе запрещено — проставляется только
+                    при явном подтверждении от автора темы.
+                </li>
+                <li>
+                    <strong>Критик #1 (LLM #2)</strong><br>
+                    Второй LLM-вызов проверяет JSON от экстрактора: удаляет слабые темы,
+                    сливает дубли по первопричине, валидирует id по индексу сообщений,
+                    проверяет дубликаты. Если критик вернул менее 50% тем — срабатывает
+                    fallback на данные до критика.
+                </li>
+                <li>
+                    <strong>Критик #2 per-topic (LLM #3)</strong><br>
+                    Отдельный LLM-запрос на каждую тему с контекстным окном (20 сообщений
+                    до anchor, 80 после + все сообщения автора темы). Ищет кросс-юзер
+                    конфликты, проверяет соответствие решения логу, валидирует заголовок.
+                    Принудительно восстанавливает оригинальный id, если LLM его изменил.
+                </li>
+                <li>
+                    <strong>Верификация по документации (LLM #4)</strong><br>
+                    Четвёртый LLM-вызов сверяет каждое решение/совет с официальной
+                    документацией проекта (README + FAQ с GitHub). <code>verified=true</code>
+                    — только если в документации есть точное совпадение. При конфликте
+                    (маркер «расходятся») — принудительно <code>verified=false</code>.
+                </li>
+                <li>
+                    <strong>Финальный генератор (LLM #5)</strong><br>
+                    Пятый LLM-вызов собирает HTML-текст для Telegram по жёсткому шаблону
+                    с разделами «Главное за день», «Новости и релизы», «Проблемы и решения»,
+                    «Советы дня». Каждый пункт содержит ссылку на исходное сообщение.
+                </li>
+                <li>
+                    <strong>Код-валидатор (0 токенов, без LLM)</strong><br>
+                    Детерминированная проверка финального текста: замена Markdown на HTML,
+                    проверка баланса тегов, удаление пустых разделов, проверка на заглушки,
+                    схлопывание лишних пустых строк.
+                </li>
+                <li>
+                    <strong>Логгирование и отправка</strong><br>
+                    В таблицу <code>digest_runs</code> (Supabase/PostgreSQL) записывается
+                    полная информация о запуске: статусы этапов, токены, стоимость, ошибки.
+                    Затем дайджест отправляется в чат модераторов и, после очистки
+                    диагностики, в публичный канал.
+                </li>
+            </ol>
+        </section>
+
+        <!-- LLM stages -->
+        <section>
+            <h2>Этапы LLM-конвейера</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Этап</th>
+                            <th>Роль</th>
+                            <th>Модель</th>
+                            <th>Особенности</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>LLM #1 — Экстрактор</td>
+                            <td>Извлекает темы из лога</td>
+                            <td><code>DeepSeek V4 Flash</code></td>
+                            <td>reasoning high, до 12 проблем, 5 советов</td>
+                        </tr>
+                        <tr>
+                            <td>LLM #2 — Критик #1</td>
+                            <td>Валидация JSON целиком</td>
+                            <td><code>DeepSeek V4 Flash</code></td>
+                            <td>Удаление слабых тем, слияние дублей, fallback при &lt;50%</td>
+                        </tr>
+                        <tr>
+                            <td>LLM #3 — Критик #2</td>
+                            <td>Per-topic проверка</td>
+                            <td><code>DeepSeek V4 Flash</code></td>
+                            <td>N запросов (по числу тем), контекст ±50 сообщений</td>
+                        </tr>
+                        <tr>
+                            <td>LLM #4 — Верификатор</td>
+                            <td>Сверка с документацией</td>
+                            <td><code>DeepSeek V4 Flash</code></td>
+                            <td>verified=true только при точном совпадении</td>
+                        </tr>
+                        <tr>
+                            <td>LLM #5 — Генератор</td>
+                            <td>Формирует финальный текст</td>
+                            <td><code>DeepSeek V4 Flash</code></td>
+                            <td>HTML-шаблон, статусы ✅/⚠️/⛔</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Key metrics -->
+        <section>
+            <h2>Ключевые метрики</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Метрика</th>
+                            <th>Значение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Лимит проблем</td><td>до 12</td></tr>
+                        <tr><td>Лимит советов</td><td>до 5</td></tr>
+                        <tr><td>Контекстное окно Critic #2</td><td>±50 (20 до, 80 после)</td></tr>
+                        <tr><td>Лимит сообщений за раз</td><td>1500</td></tr>
+                        <tr><td>Максимальная длина одной части</td><td>3500 символов</td></tr>
+                        <tr><td>LLM-вызовов за запуск</td><td>5 + (N тем × 1 для Critic #2)</td></tr>
+                        <tr><td>Провайдер</td><td>OpenRouter (DeepSeek)</td></tr>
+                        <tr><td>Запуск</td><td>Ежедневно в 00:21 МСК</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Key features -->
+        <section>
+            <h2>Архитектурные особенности</h2>
+            <ul class="feature-list">
+                <li>
+                    <strong>Факт-чекинг через id</strong>
+                    Каждая тема обязана иметь ссылку на реальное сообщение в чате.
+                    LLM не может добавить факт без подтверждения — id проверяется
+                    по индексу сообщений на нескольких этапах.
+                </li>
+                <li>
+                    <strong>Детекция кросс-юзер конфликтов</strong>
+                    Если один пользователь пишет «помогло», а другой в той же теме
+                    «не работает» — Critic #2 per-topic понижает статус до
+                    «предложено» с маркером «результаты расходятся».
+                </li>
+                <li>
+                    <strong>Верификация по официальной документации</strong>
+                    Четвёртый LLM-вызов сверяет каждое решение с README и FAQ
+                    проекта. Подтверждённые и неподтверждённые решения явно
+                    разделены (verified true/false).
+                </li>
+                <li>
+                    <strong>Принудительная защита id</strong>
+                    Нормализатор ответов Critic #2 принудительно восстанавливает
+                    оригинальный id, если LLM его изменил — несмотря на прямой
+                    запрет в промпте.
+                </li>
+                <li>
+                    <strong>Fallback-система</strong>
+                    При сбое любого LLM-этапа используются данные предыдущего
+                    этапа. Критик #1 работает с continueOnFail. Дайджест не
+                    теряется при единичных сбоях.
+                </li>
+                <li>
+                    <strong>Прозрачная диагностика</strong>
+                    В футере каждого дайджеста — статус по каждому этапу
+                    с вердиктом «всё штатно / желательна проверка / нужна
+                    ручная проверка».
+                </li>
+                <li>
+                    <strong>Полное логгирование</strong>
+                    Каждый запуск пишется в Supabase: токены, стоимость,
+                    статусы этапов, HTTP-статусы, ошибки — готовая система
+                    мониторинга SLA.
+                </li>
+            </ul>
+        </section>
+
+        <!-- Tech stack -->
+        <section>
+            <h2>Технический стек</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Компонент</th>
+                            <th>Технология</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Оркестрация</td><td>n8n (workflow editor)</td></tr>
+                        <tr><td>LLM-провайдер</td><td>OpenRouter</td></tr>
+                        <tr><td>Модели</td><td>DeepSeek V4 Flash</td></tr>
+                        <tr><td>Данные чата</td><td>Telegram GramPro API</td></tr>
+                        <tr><td>Документация</td><td>GitHub RAW (README + FAQ)</td></tr>
+                        <tr><td>Хранилище</td><td>PostgreSQL / Supabase</td></tr>
+                        <tr><td>Язык</td><td>JavaScript (n8n Code nodes)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Status system -->
+        <section>
+            <h2>Система диагностики</h2>
+            <p>
+                В футере каждого дайджеста выводится диагностический блок. Пример:
+            </p>
+            <pre><code>⚙️ Диагностика
+• Критик: OK, тем 8
+• Критик #2: применено 6, id-fallback 0, провалено 0
+• LLM-этапы: 5/5 ✅
+• Верификация: P ✅3/⚠️5, T ✅1/⚠️4
+• Валидатор: OK
+• Итог: всё штатно</code></pre>
+            <p>Возможные вердикты:</p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0;">
+                <span class="status-badge green">✅ всё штатно</span>
+                <span class="status-badge yellow">⚠️ желательна беглая проверка</span>
+                <span class="status-badge red">⛔ нужна ручная проверка</span>
+            </div>
+        </section>
+
+        <!-- Statuses in digest -->
+        <section>
+            <h2>Статусы в дайджесте</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Значок</th>
+                            <th>Условие</th>
+                            <th>Значение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>✅</td>
+                            <td><code>resolved=true</code> + solution есть</td>
+                            <td>Проблема решена, автор подтвердил</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ предложено</td>
+                            <td><code>resolved=false</code> + solution есть / officialNote есть</td>
+                            <td>Решение предложено, но автор не подтвердил</td>
+                        </tr>
+                        <tr>
+                            <td>⛔ не решено</td>
+                            <td>Нет ни решения, ни officialNote</td>
+                            <td>Проблема открыта</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Known limitations -->
+        <section>
+            <h2>Известные ограничения</h2>
+            <ul class="feature-list" style="list-style: disc; padding-left: 20px;">
+                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
+                    Работает только с Telegram-чатами (через GramPro API)
+                </li>
+                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
+                    Привязан к OpenRouter как LLM-провайдеру (параметризуется в Config)
+                </li>
+                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
+                    Документация жёстко завязана на XKeen (README + FAQ с GitHub)
+                </li>
+                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
+                    Список модераторов задан статически в Config (3 id)
+                </li>
+                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
+                    Не поддерживает потоковые чаты (только дискретные сообщения)
+                </li>
+            </ul>
+        </section>
+
+        <!-- Contact -->
+        <section>
+            <h2>Контакты</h2>
+            <div class="card" style="text-align: center; padding: 32px;">
+                <p style="margin-bottom: 8px; font-size: 16px; color: var(--text);">
+                    Автор решения: <strong>@dmn_101</strong>
+                </p>
+                <p style="margin-bottom: 0; font-size: 14px;">
+                    По вопросам кастомизации под ваш Telegram-чат и документацию,<br>
+                    white-label внедрения и интеграции с вашей базой знаний —
+                    <a href="https://t.me/dmn_101">пишите в Telegram</a>.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>AI-дайджест чата поддержки · v0.24 · 2025</p>
+        <p style="font-size: 12px; margin-top: 4px;">
+            Собрано на основе n8n-воркфлоу «Telegram — Дайджест XKEEN (трехэтапный с верификацией и критиком) Per-topic v0.24»
+        </p>
+    </footer>
+
+</div>
+
+<!-- Mermaid -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+            background: '#0d1117',
+            primaryColor: '#1f2937',
+            primaryBorderColor: '#30363d',
+            primaryTextColor: '#e6edf3',
+            lineColor: '#58a6ff',
+            fontSize: '14px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif'
+        },
+        flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis',
+            padding: 20,
+            nodeSpacing: 60,
+            rankSpacing: 80
+        }
+    });
+</script>
+
+</body>
+</html>
