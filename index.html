@@ -6,6 +6,7 @@
     <title>AI-дайджест чата поддержки — Документация решения</title>
     <meta name="description" content="Техническая документация n8n-воркфлоу для автоматического ежедневного дайджеста Telegram-чата поддержки с многоэтапной LLM-верификацией.">
     <style>
+        /* ===== TOKENS ===== */
         :root {
             --bg: #0d1117;
             --bg-card: #161b22;
@@ -18,218 +19,82 @@
             --accent-yellow: #d29922;
             --accent-red: #f85149;
             --accent-purple: #bc8cff;
+
+            /* Type scale */
+            --text-xs: 12px;
+            --text-sm: 14px;
+            --text-base: 15px;
+            --text-lg: 17px;
+            --text-xl: 22px;
+            --text-2xl: 36px;
+
             --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
             --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+            --sidebar-width: 260px;
         }
 
+        /* ===== RESET ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: var(--font);
             background: var(--bg);
             color: var(--text);
+            font-size: var(--text-base);
             line-height: 1.6;
         }
 
         .container {
-            max-width: 960px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 24px;
         }
 
-        /* Pipeline diagram */
-        .pipeline {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px 16px;
-            margin: 24px 0;
-        }
-
-        .pipeline-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-
-        .pipeline-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .pipeline-row + .pipeline-row {
-            margin-top: 8px;
-        }
-
-        .pipe-node {
-            background: #1f2937;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: var(--text);
-            text-align: center;
-            min-width: 100px;
-            line-height: 1.3;
-            flex: 0 0 auto;
-        }
-
-        .pipe-node .pipe-icon {
-            display: block;
-            font-size: 16px;
-            margin-bottom: 2px;
-        }
-
-        .pipe-node.llm-node {
-            background: #132f1a;
-            border-color: #1a4a2a;
-            color: var(--accent-green);
-        }
-
-        .pipe-node.validator-node {
-            background: #2d2410;
-            border-color: #4b3a16;
-            color: var(--accent-yellow);
-        }
-
-        .pipe-node.check-node {
-            background: #1f2937;
-            border-color: var(--accent);
-        }
-
-        .pipe-node.stop-node {
-            background: #2d1414;
-            border-color: #4b1d1d;
-            color: var(--accent-red);
-        }
-
-        .pipe-arrow {
-            color: var(--accent);
-            font-size: 16px;
-            padding: 0 2px;
-            flex: 0 0 auto;
-        }
-
-        .pipe-yes {
-            color: var(--accent-green);
-            font-size: 11px;
-        }
-
-        .pipe-no {
-            color: var(--accent-red);
-            font-size: 11px;
-        }
-
-        .pipe-branch {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .pipe-branch-row {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        @media (max-width: 640px) {
-            .pipe-node {
-                min-width: 80px;
-                font-size: 11px;
-                padding: 6px 8px;
-            }
-            .pipeline-row {
-                gap: 2px;
-            }
-        }
-
-        /* ============= INTRO BLOCK ============= */
+        /* ===== INTRO ===== */
         .intro {
             padding: 60px 0 40px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 40px;
         }
 
         .intro-tag {
             display: inline-block;
-            background: #1f2937;
+            background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 4px 14px;
-            font-size: 12px;
+            font-size: var(--text-xs);
             color: var(--text-secondary);
             margin-bottom: 16px;
         }
 
         .intro h1 {
-            font-size: 36px;
+            font-size: var(--text-2xl);
             font-weight: 700;
             letter-spacing: -0.75px;
             line-height: 1.2;
             margin-bottom: 16px;
         }
 
-        .intro h1 .highlight {
-            color: var(--accent);
-        }
+        .intro h1 .hl { color: var(--accent); }
 
-        .intro .desc {
-            font-size: 17px;
+        .intro-desc {
+            font-size: var(--text-lg);
             color: var(--text-secondary);
             max-width: 700px;
             margin-bottom: 32px;
             line-height: 1.5;
         }
 
-        .intro .cards {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
+        .intro-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
             margin-bottom: 32px;
         }
 
-        @media (max-width: 640px) {
-            .intro .cards { grid-template-columns: 1fr; }
-        }
-
-        .intro .card-compare {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        .intro .card-compare .icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .intro .card-compare .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .intro .card-compare .card-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        .intro .role-group {
-            margin-bottom: 20px;
-        }
-
-        .intro .role-group:last-of-type {
-            margin-bottom: 32px;
-        }
-
-        .intro .role-label {
-            font-size: 13px;
+        .role-label {
+            font-size: var(--text-sm);
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 10px;
@@ -237,44 +102,26 @@
             letter-spacing: 0.5px;
         }
 
-        .intro .role-cards {
+        .role-cards {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
 
-        @media (max-width: 640px) {
-            .intro .role-cards { grid-template-columns: 1fr; }
-        }
-
-        .intro .role-card {
+        .role-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 16px;
         }
 
-        .intro .role-card .rc-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
+        .role-card .rc-icon { font-size: 20px; margin-bottom: 4px; }
+        .role-card .rc-label { font-size: var(--text-xs); font-weight: 600; margin-bottom: 4px; }
+        .role-card .rc-label.was { color: var(--accent-red); }
+        .role-card .rc-label.now { color: var(--accent-green); }
+        .role-card .rc-text { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.4; }
 
-        .intro .role-card .rc-label {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .intro .role-card .rc-label.was { color: var(--accent-red); }
-        .intro .role-card .rc-label.now { color: var(--accent-green); }
-
-        .intro .role-card .rc-text {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        .intro .card-feature {
+        .card-feature {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -284,116 +131,136 @@
             gap: 12px;
         }
 
-        .intro .card-feature .cf-icon {
-            font-size: 24px;
-            flex-shrink: 0;
-        }
+        .card-feature .cf-icon { font-size: 24px; flex-shrink: 0; }
+        .card-feature .cf-text { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.4; }
+        .card-feature .cf-text strong { color: var(--text); }
 
-        .intro .card-feature .cf-text {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        .intro .card-feature .cf-text strong {
-            color: var(--text);
-        }
-
-        .intro .cta-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .intro .cta-group {
+        .cta-group {
             display: flex;
             align-items: center;
             gap: 20px;
             flex-wrap: wrap;
         }
 
-        @media (max-width: 640px) {
-            .intro .cta-group {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-        }
-
-        .intro .cta-button {
+        .cta-button {
             display: inline-block;
             padding: 10px 24px;
             background: var(--accent);
-            color: #0d1117;
+            color: var(--bg);
             font-weight: 600;
-            font-size: 14px;
+            font-size: var(--text-sm);
             border-radius: 6px;
             text-decoration: none;
             transition: opacity 0.15s;
         }
 
-        .intro .cta-button:hover {
-            opacity: 0.85;
-            text-decoration: none;
+        .cta-button:hover { opacity: 0.85; }
+
+        .cta-secondary { font-size: var(--text-sm); color: var(--text-secondary); }
+        .cta-secondary a { color: var(--accent); }
+
+        /* ===== DOCS LAYOUT ===== */
+        .docs-layout {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            gap: 40px;
+            padding-top: 40px;
         }
 
-        .intro .cta-secondary {
-            font-size: 14px;
+        .docs-sidebar {
+            position: sticky;
+            top: 24px;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            padding-bottom: 24px;
+        }
+
+        /* Scrollbar styling for sidebar */
+        .docs-sidebar::-webkit-scrollbar { width: 4px; }
+        .docs-sidebar::-webkit-scrollbar-track { background: transparent; }
+        .docs-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .docs-nav { font-size: var(--text-xs); }
+
+        .docs-nav-group { margin-bottom: 16px; }
+
+        .docs-nav-group-title {
+            font-size: var(--text-xs);
+            font-weight: 600;
             color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            padding-left: 12px;
         }
 
-        .intro .cta-secondary a {
-            color: var(--accent);
+        .docs-nav-group ul { list-style: none; padding: 0; margin: 0; }
+        .docs-nav-group li { margin: 0; }
+
+        .docs-nav-group a {
+            display: block;
+            padding: 4px 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            border-radius: 0 4px 4px 0;
+            transition: all 0.15s;
+            line-height: 1.4;
         }
 
-        /* ============= MAIN DOCS ============= */
+        .docs-nav-group a:hover { color: var(--text); background: var(--bg-card); }
+        .docs-nav-group a.active { color: var(--accent); border-left-color: var(--accent); background: var(--bg-card); }
 
+        .docs-main { min-width: 0; }
+
+        /* ===== GROUPS ===== */
+        .docs-group {
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .docs-group:first-of-type { border-top: none; padding-top: 0; }
+
+        .docs-group-title {
+            font-size: var(--text-xs);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
         .docs-section {
             scroll-margin-top: 24px;
+            margin-bottom: 40px;
         }
 
         h2 {
-            font-size: 22px;
+            font-size: var(--text-xl);
             font-weight: 600;
-            margin: 40px 0 16px;
+            margin: 0 0 16px;
             padding-bottom: 8px;
             border-bottom: 1px solid var(--border);
         }
 
         h3 {
-            font-size: 17px;
+            font-size: var(--text-lg);
             font-weight: 600;
             margin: 24px 0 12px;
         }
 
-        p {
-            margin-bottom: 12px;
-            color: var(--text-secondary);
-        }
+        p { margin-bottom: 12px; color: var(--text-secondary); }
+        strong { color: var(--text); }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
 
-        strong {
-            color: var(--text);
-        }
-
-        a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
+        /* ===== CARDS ===== */
         .card-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
             margin: 20px 0;
-        }
-
-        @media (max-width: 640px) {
-            .card-grid { grid-template-columns: 1fr; }
         }
 
         .card {
@@ -403,32 +270,34 @@
             padding: 20px;
         }
 
-        .card h3 {
-            margin: 0 0 8px;
-            font-size: 15px;
+        .card h3 { margin: 0 0 8px; font-size: var(--text-sm); }
+        .card .stage { font-size: var(--text-xs); color: var(--accent-purple); font-family: var(--font-mono); margin-bottom: 4px; }
+        .card p { font-size: var(--text-sm); margin: 0; }
+
+        .toc-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
         }
 
-        .card .stage {
-            font-size: 12px;
-            color: var(--accent-purple);
-            font-family: var(--font-mono);
-            margin-bottom: 4px;
-        }
+        .toc-card h3 { margin: 0 0 8px; font-size: var(--text-sm); }
 
-        .card p {
-            font-size: 14px;
+        .toc-card ul {
+            list-style: none;
+            padding: 0;
             margin: 0;
+            font-size: var(--text-xs);
+            line-height: 1.8;
         }
 
-        .table-wrapper {
-            overflow-x: auto;
-            margin: 20px 0;
-        }
+        /* ===== TABLES ===== */
+        .table-wrapper { overflow-x: auto; margin: 20px 0; }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: var(--text-sm);
         }
 
         th {
@@ -447,18 +316,23 @@
             color: var(--text-secondary);
         }
 
-        td:first-child {
-            color: var(--text);
-            font-weight: 500;
+        td:first-child { color: var(--text); font-weight: 500; }
+        tr:hover td { background: var(--bg-hover); }
+
+        /* Table where first column is code identifier */
+        .table-code td:first-child {
+            font-family: var(--font-mono);
+            font-weight: normal;
+            font-size: var(--text-xs);
         }
 
-        tr:hover td {
-            background: var(--bg-hover);
-        }
+        /* Table where first column is plain text */
+        .table-plain td:first-child { font-weight: normal; }
 
+        /* ===== CODE ===== */
         code {
             font-family: var(--font-mono);
-            font-size: 13px;
+            font-size: var(--text-xs);
             background: #1f2937;
             padding: 2px 6px;
             border-radius: 4px;
@@ -472,21 +346,18 @@
             padding: 16px;
             overflow-x: auto;
             margin: 16px 0;
-            font-size: 13px;
+            font-size: var(--text-xs);
             line-height: 1.5;
         }
 
-        pre code {
-            background: none;
-            padding: 0;
-            color: var(--text);
-        }
+        pre code { background: none; padding: 0; color: var(--text); }
 
+        /* ===== BADGES ===== */
         .status-badge {
             display: inline-block;
             padding: 2px 10px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: var(--text-xs);
             font-weight: 500;
         }
 
@@ -494,10 +365,10 @@
         .status-badge.yellow { background: #2d2410; color: var(--accent-yellow); border: 1px solid #4b3a16; }
         .status-badge.red { background: #2d1414; color: var(--accent-red); border: 1px solid #4b1d1d; }
 
-        .feature-list {
-            list-style: none;
-            margin: 16px 0;
-        }
+        .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+
+        /* ===== LISTS ===== */
+        .feature-list { list-style: none; margin: 16px 0; }
 
         .feature-list li {
             padding: 12px 16px;
@@ -505,21 +376,33 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             margin-bottom: 8px;
-            font-size: 14px;
+            font-size: var(--text-sm);
             color: var(--text-secondary);
         }
 
-        .feature-list li strong {
-            color: var(--text);
-            display: block;
-            margin-bottom: 4px;
+        .feature-list li strong { color: var(--text); display: block; margin-bottom: 4px; }
+
+        .plain-list { list-style: none; padding-left: 0; margin: 12px 0; }
+
+        .plain-list li {
+            padding: 8px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
         }
 
-        .step-list {
-            list-style: none;
-            counter-reset: step;
-            margin: 20px 0;
+        .bare-list { list-style: none; padding-left: 0; margin: 12px 0; }
+
+        .bare-list li {
+            padding: 6px 0;
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
         }
+
+        .step-list { list-style: none; counter-reset: step; margin: 20px 0; }
 
         .step-list li {
             counter-increment: step;
@@ -529,7 +412,7 @@
             border-radius: 8px;
             margin-bottom: 10px;
             position: relative;
-            font-size: 14px;
+            font-size: var(--text-sm);
             color: var(--text-secondary);
         }
 
@@ -546,41 +429,81 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: var(--text-sm);
             font-weight: 600;
             color: var(--accent);
         }
 
-        .step-list li strong {
-            color: var(--text);
-        }
+        .step-list li strong { color: var(--text); }
 
+        /* ===== AUTHOR BAR ===== */
         .author-bar {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 10px 16px;
             background: var(--bg-card);
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 13px;
+            font-size: var(--text-sm);
             margin: 24px 0;
         }
 
-        .author-bar .label {
-            color: var(--text-secondary);
+        .author-bar .label { color: var(--text-secondary); }
+
+        /* ===== PIPELINE ===== */
+        .pipeline {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 16px;
+            margin: 24px 0;
         }
 
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 24px 0;
-            margin-top: 60px;
+        .pipeline-grid { display: flex; flex-direction: column; gap: 0; }
+
+        .pipeline-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .pipeline-row + .pipeline-row { margin-top: 8px; }
+
+        .pipe-node {
+            background: #1f2937;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: var(--text-xs);
+            color: var(--text);
             text-align: center;
-            color: var(--text-secondary);
-            font-size: 13px;
+            min-width: 100px;
+            line-height: 1.3;
+            flex: 0 0 auto;
         }
 
-        /* ============= MERMAID DIAGRAMS ============= */
+        .pipe-node .pipe-icon { display: block; font-size: 16px; margin-bottom: 2px; }
+        .pipe-node.llm-node { background: #132f1a; border-color: #1a4a2a; color: var(--accent-green); }
+        .pipe-node.validator-node { background: #2d2410; border-color: #4b3a16; color: var(--accent-yellow); }
+
+        .pipe-arrow { color: var(--accent); font-size: 16px; padding: 0 2px; flex: 0 0 auto; }
+
+        .pipeline-legend { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+        .legend-tag {
+            display: inline-block;
+            border-radius: 3px;
+            padding: 1px 6px;
+            font-size: var(--text-xs);
+        }
+
+        .legend-tag.llm { background: #132f1a; border: 1px solid #1a4a2a; color: var(--accent-green); }
+        .legend-tag.validator { background: #2d2410; border: 1px solid #4b3a16; color: var(--accent-yellow); }
+
+        /* ===== MERMAID ===== */
         .mermaid-container {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -601,7 +524,7 @@
         }
 
         .mermaid-caption {
-            font-size: 12px;
+            font-size: var(--text-sm);
             color: var(--text-secondary);
             margin-top: 8px;
             text-align: center;
@@ -612,32 +535,133 @@
             gap: 12px;
             flex-wrap: wrap;
             margin: 12px 0;
-            font-size: 12px;
+            font-size: var(--text-xs);
         }
 
-        .mermaid-legend .item {
-            display: inline-flex;
+        .mermaid-legend .item { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+        .mermaid-legend .dot { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+
+        /* ===== DETAILS ===== */
+        details {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        summary {
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text);
+            user-select: none;
+            list-style: none;
+            display: flex;
             align-items: center;
-            gap: 6px;
-            color: var(--text-secondary);
+            gap: 8px;
         }
 
-        .mermaid-legend .dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
+        summary::before {
+            content: '▸';
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            transition: transform 0.15s;
+        }
+
+        details[open] summary::before { transform: rotate(90deg); }
+        summary:hover { background: var(--bg-hover); }
+
+        .details-content { padding: 0 20px 20px; }
+
+        /* ===== DIGEST EXAMPLE ===== */
+        .digest-example {
+            background: #1f2937;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 12px 0;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .color-legend { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; font-size: var(--text-xs); }
+
+        .legend-chip { padding: 3px 10px; border-radius: 4px; }
+
+        /* ===== BACK TO TOP ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 100;
+            text-decoration: none;
+            color: var(--accent);
+            font-size: 18px;
+        }
+
+        .back-to-top.visible { opacity: 1; visibility: visible; }
+        .back-to-top:hover { background: var(--bg-hover); border-color: var(--accent); }
+
+        /* ===== FOOTER ===== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            margin-top: 60px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+        }
+
+        footer .footer-sub { font-size: var(--text-xs); margin-top: 4px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .docs-layout { grid-template-columns: 1fr; }
+
+            .docs-sidebar {
+                position: static;
+                max-height: none;
+                overflow: visible;
+                padding-bottom: 0;
+                margin-bottom: 24px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .docs-nav { display: flex; flex-wrap: wrap; gap: 16px; }
+            .docs-nav-group { margin-bottom: 0; }
+            .docs-nav-group-title { padding-left: 0; }
+
+            .pipeline-row { flex-direction: column; gap: 8px; }
+            .pipe-arrow { transform: rotate(90deg); }
         }
 
         @media (max-width: 640px) {
-            .mermaid-container {
-                padding: 12px;
-            }
-        }
-
-        /* Scroll-margin for TOC anchor navigation */
-        .docs-section h2 {
-            scroll-margin-top: 16px;
+            .container { padding: 0 16px; }
+            .intro { padding: 40px 0 24px; }
+            .intro h1 { font-size: 28px; }
+            .role-cards, .card-grid { grid-template-columns: 1fr; }
+            .cta-group { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .pipe-node { min-width: 80px; font-size: var(--text-xs); padding: 6px 8px; }
+            .pipe-arrow { font-size: var(--text-xs); }
+            .mermaid-container { padding: 12px; }
         }
     </style>
 
@@ -657,7 +681,7 @@
                     secondaryColor: '#161b22',
                     tertiaryColor: '#161b22',
                     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif',
-                    fontSize: '15px',
+                    fontSize: '16px',
                     noteBkgColor: '#1f2937',
                     noteTextColor: '#e6edf3',
                     noteBorderColor: '#30363d',
@@ -670,75 +694,67 @@
                     padding: 12,
                     nodeSpacing: 50,
                     rankSpacing: 60,
-                    wrappingWidth: 200
+                    wrappingWidth: 250
                 }
             });
         });
     </script>
 
     <script>
-    // Auto-generate IDs for h2 elements (for TOC anchor navigation)
-    document.addEventListener('DOMContentLoaded', function() {
-        const sectionMap = {
-            'обзор': 'overview',
-            'архитектура конвейера': 'pipeline',
-            'как это работает': 'how-it-works',
-            '🎯 правила отбора тем: tier 1 и tier 2': 'tier-rules',
-            '📊 воронка качества: от сырого лога до дайджеста': 'quality-funnel',
-            'этапы llm-конвейера': 'llm-stages',
-            '🔄 трансформация данных по этапам': 'data-shape',
-            'ключевые метрики': 'key-metrics',
-            'архитектурные особенности': 'arch-features',
-            '💵 стоимость и окупаемость': 'cost',
-            '⚔️ детекция cross-user конфликтов: как это работает': 'conflict',
-            'технический стек': 'tech-stack',
-            'система диагностики': 'diagnostic',
-            '📤 два канала публикации: модераторы и публичный канал': 'two-tier',
-            'статусы в дайджесте': 'statuses',
-            '📐 структура дайджеста: 4 секции, точные правила': 'digest-structure',
-            '📋 пример с подсветкой: реальный дайджест со всеми блоками': 'annotated-example',
-            '🛠️ config reference: что и где менять': 'config',
-            '🗄️ ddl таблицы digest_runs': 'ddl',
-            'известные ограничения': 'limitations',
-            '📖 глоссарий терминов': 'glossary',
-            'контакты': 'contact'
-        };
+        // Scrollspy + back-to-top
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Scrollspy ---
+            const sections = document.querySelectorAll('.docs-section[id]');
+            const navLinks = document.querySelectorAll('.docs-nav-group a');
+            const linkMap = {};
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#')) linkMap[href.slice(1)] = link;
+            });
 
-        function getSectionId(text) {
-            const key = text.toLowerCase().trim();
-            if (sectionMap[key]) return sectionMap[key];
-            return key
-                .replace(/[^\w\sа-яё-]/g, '')
-                .replace(/\s+/g, '-')
-                .substring(0, 50);
-        }
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        if (linkMap[id]) linkMap[id].classList.add('active');
+                    }
+                });
+            }, { rootMargin: '-80px 0px -70% 0px' });
 
-        document.querySelectorAll('.docs-section h2').forEach(h2 => {
-            if (!h2.id) h2.id = getSectionId(h2.textContent);
+            sections.forEach(s => observer.observe(s));
+
+            // --- Back to top ---
+            const btn = document.querySelector('.back-to-top');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 600) btn.classList.add('visible');
+                else btn.classList.remove('visible');
+            });
+            btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         });
-    });
     </script>
 </head>
 <body>
 
+<a href="#" class="back-to-top" aria-label="Наверх">↑</a>
+
 <div class="container">
 
-    <!-- ============= INTRO BLOCK ============= -->
+    <!-- ===== INTRO ===== -->
     <div class="intro">
         <div class="intro-tag">Для чатов поддержки в Telegram</div>
 
         <h1>
             Каждое утро —<br>
-            <span class="highlight">готовый отчёт</span> о том,<br>
+            <span class="hl">готовый отчёт</span> о том,<br>
             что сломалось в чате
         </h1>
 
-        <p class="desc" style="max-width: 680px; line-height: 1.65; color: #9aa0ac;">
+        <p class="intro-desc">
             Модераторы получают список проблем и решений. Участники чата читают один короткий дайджест вместо истории за весь день.
         </p>
 
-        <div class="cards" style="display: flex; flex-direction: column; gap: 24px; margin-bottom: 32px;">
-            <!-- Модератору -->
+        <div class="intro-cards">
             <div class="role-group">
                 <div class="role-label">👤 Для модератора</div>
                 <div class="role-cards">
@@ -755,7 +771,6 @@
                 </div>
             </div>
 
-            <!-- Участнику -->
             <div class="role-group">
                 <div class="role-label">💬 Для участника чата</div>
                 <div class="role-cards">
@@ -772,7 +787,6 @@
                 </div>
             </div>
 
-            <!-- Без выдумок -->
             <div class="card-feature">
                 <div class="cf-icon">🔒</div>
                 <div class="cf-text"><strong>Без выдумок</strong> — каждый пункт дайджеста содержит ссылку на реальное сообщение в чате, ничего не придумано</div>
@@ -785,56 +799,46 @@
         </div>
     </div>
 
-    <!-- ============= DOCS CONTENT ============= -->
-    <div class="docs-section" id="docs">
+    <!-- ===== DOCS LAYOUT ===== -->
+    <div class="docs-layout" id="docs">
 
-        <!-- Author -->
-        <div class="author-bar">
-            <span class="label">Автор решения:</span>
-            <a href="https://t.me/dmn_101">@dmn_101</a>
-            <span style="color: var(--text-secondary);">·</span>
-            <span class="label">Кастомизация и внедрение</span>
-        </div>
-
-        <!-- Table of contents -->
-        <section>
-            <h2>📑 Содержание</h2>
-            <p>Быстрый навигатор по документу. Разделы сгруппированы по тематике.</p>
-            <div class="card-grid">
-                <div class="card">
-                    <h3>🚀 Обзор</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+        <!-- ===== SIDEBAR TOC ===== -->
+        <aside class="docs-sidebar">
+            <nav class="docs-nav">
+                <div class="docs-nav-group">
+                    <div class="docs-nav-group-title">🚀 Обзор</div>
+                    <ul>
                         <li><a href="#overview">Обзор решения</a></li>
                         <li><a href="#pipeline">Архитектура конвейера</a></li>
                         <li><a href="#how-it-works">Как это работает</a></li>
                     </ul>
                 </div>
-                <div class="card">
-                    <h3>🎯 Правила и фильтрация</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+                <div class="docs-nav-group">
+                    <div class="docs-nav-group-title">🎯 Правила и фильтрация</div>
+                    <ul>
                         <li><a href="#tier-rules">Tier 1 / Tier 2 правила</a></li>
                         <li><a href="#quality-funnel">Воронка качества</a></li>
                     </ul>
                 </div>
-                <div class="card">
-                    <h3>🤖 LLM-этапы</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+                <div class="docs-nav-group">
+                    <div class="docs-nav-group-title">🤖 LLM-этапы</div>
+                    <ul>
                         <li><a href="#llm-stages">5 этапов LLM-конвейера</a></li>
                         <li><a href="#data-shape">Трансформация данных</a></li>
                         <li><a href="#key-metrics">Ключевые метрики</a></li>
                     </ul>
                 </div>
-                <div class="card">
-                    <h3>⚙️ Архитектура</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+                <div class="docs-nav-group">
+                    <div class="docs-nav-group-title">⚙️ Архитектура</div>
+                    <ul>
                         <li><a href="#arch-features">Особенности</a></li>
                         <li><a href="#conflict">Conflict detection</a></li>
                         <li><a href="#cost">Стоимость и окупаемость</a></li>
                     </ul>
                 </div>
-                <div class="card">
-                    <h3>📤 Выходы и формат</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+                <div class="docs-nav-group">
+                    <div class="docs-nav-group-title">📤 Выходы и формат</div>
+                    <ul>
                         <li><a href="#tech-stack">Технический стек</a></li>
                         <li><a href="#diagnostic">Система диагностики</a></li>
                         <li><a href="#two-tier">Два канала</a></li>
@@ -843,340 +847,273 @@
                         <li><a href="#annotated-example">Пример с подсветкой</a></li>
                     </ul>
                 </div>
-                <div class="card">
-                    <h3>🛠️ Разработчику</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+                <div class="docs-nav-group">
+                    <div class="docs-nav-group-title">🛠️ Разработчику</div>
+                    <ul>
                         <li><a href="#config">Config reference</a></li>
                         <li><a href="#ddl">DDL digest_runs</a></li>
                         <li><a href="#limitations">Известные ограничения</a></li>
                         <li><a href="#glossary">Глоссарий</a></li>
                     </ul>
                 </div>
+            </nav>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <div class="docs-main">
+
+            <!-- Author bar -->
+            <div class="author-bar">
+                <span class="label">Автор решения:</span>
+                <a href="https://t.me/dmn_101">@dmn_101</a>
+                <span class="label">· Кастомизация и внедрение</span>
             </div>
-        </section>
 
-        <!-- Overview -->
-        <section>
-            <h2>Обзор</h2>
-            <p>
-                Это n8n-воркфлоу, который каждую ночь забирает историю Telegram-чата поддержки за
-                прошедшие МСК-сутки, прогоняет через <strong>5 LLM-вызовов</strong> с двумя независимыми
-                критиками и верификацией по официальной документации, и публикует готовый
-                структурированный дайджест — в чат модераторов и в публичный канал.
-            </p>
-            <p>
-                Ключевое отличие от простых AI-суммаризаторов — <strong>проверяемость</strong>: каждая
-                тема обязана иметь ссылку на реальное сообщение, каждое решение проверяется
-                отдельным LLM-критиком, а затем сверяется с документацией проекта.
-            </p>
-        </section>
+            <!-- ===== GROUP: Обзор ===== -->
+            <div class="docs-group">
+                <div class="docs-group-title">🚀 Обзор</div>
 
-        <!-- Pipeline diagram -->
-        <section>
-            <h2>Архитектура конвейера</h2>
-            <div class="pipeline">
-                <div class="pipeline-grid">
+                <section class="docs-section" id="overview">
+                    <h2>Обзор</h2>
+                    <p>
+                        Это n8n-воркфлоу, который каждую ночь забирает историю Telegram-чата поддержки за
+                        прошедшие МСК-сутки, прогоняет через <strong>5 LLM-вызовов</strong> с двумя независимыми
+                        критиками и верификацией по официальной документации, и публикует готовый
+                        структурированный дайджест — в чат модераторов и в публичный канал.
+                    </p>
+                    <p>
+                        Ключевое отличие от простых AI-суммаризаторов — <strong>проверяемость</strong>: каждая
+                        тема обязана иметь ссылку на реальное сообщение, каждое решение проверяется
+                        отдельным LLM-критиком, а затем сверяется с документацией проекта.
+                    </p>
+                </section>
 
-                    <div class="pipeline-row">
-                        <div class="pipe-node"><span class="pipe-icon">📅</span>Schedule<br/>00:21 MSK</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">📥</span>Get chat<br/>history</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">🔍</span>Filter<br/>yesterday</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">📝</span>Format<br/>for AI</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #1<br/>Extract topics</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #2<br/>Critic #1</div>
+                <section class="docs-section" id="pipeline">
+                    <h2>Архитектура конвейера</h2>
+                    <div class="pipeline">
+                        <div class="pipeline-grid">
+                            <div class="pipeline-row">
+                                <div class="pipe-node"><span class="pipe-icon">📅</span>Schedule<br>00:21 MSK</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">📥</span>Get chat<br>history</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">🔍</span>Filter<br>yesterday</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">📝</span>Format<br>for AI</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #1<br>Extract topics</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #2<br>Critic #1</div>
+                            </div>
+                            <div class="pipeline-row">
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">🔀</span>Splitter<br>per-topic</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #3<br>Critic #2<br>per-topic</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">🔗</span>Merge<br>topics</div>
+                            </div>
+                            <div class="pipeline-row">
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">📖</span>Fetch<br>README + FAQ</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #4<br>Verify by<br>docs</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #5<br>Final<br>generator</div>
+                            </div>
+                            <div class="pipeline-row">
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node validator-node"><span class="pipe-icon">✅</span>Code<br>validator<br>(0 tokens)</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">📊</span>Logging<br>+ SQL</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">📨</span>Send to<br>moderators</div>
+                            </div>
+                            <div class="pipeline-row">
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">🧹</span>Clean<br>for channel</div>
+                                <span class="pipe-arrow">→</span>
+                                <div class="pipe-node"><span class="pipe-icon">📨</span>Send to<br>public channel</div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="pipeline-row">
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">🔀</span>Splitter<br/>per-topic</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #3<br/>Critic #2<br/>per-topic</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">🔗</span>Merge<br/>topics</div>
+                    <div class="pipeline-legend">
+                        <span class="legend-tag llm">🤖 LLM-этапы</span>
+                        <span class="legend-tag validator">✅ Валидатор (0 токенов)</span>
                     </div>
+                </section>
 
-                    <div class="pipeline-row">
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">📖</span>Fetch<br/>README + FAQ</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #4<br/>Verify by<br/>docs</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #5<br/>Final<br/>generator</div>
+                <section class="docs-section" id="how-it-works">
+                    <h2>Как это работает</h2>
+                    <ol class="step-list">
+                        <li>
+                            <strong>Сбор и фильтрация данных</strong><br>
+                            Workflow забирает историю чата через Telegram GramPro API, отфильтровывая
+                            сообщения ботов, предыдущие дайджесты (по маркеру <code>📋 Дайджест</code>
+                            и <code>🔗</code>) и сообщения вне временного окна. После фильтрации
+                            формируется структурированный лог с индексом сообщений и списком
+                            anchor-кандидатов — сообщений с признаками жалоб.
+                        </li>
+                        <li>
+                            <strong>Извлечение тем (LLM #1 — DeepSeek V4 Flash)</strong><br>
+                            Модель получает индекс, anchor-кандидаты и полный лог чата. Извлекает
+                            до 12 проблем, 5 советов и релизы по строгим Tier-правилам. Поле
+                            <code>solution</code> на этом этапе запрещено — проставляется только
+                            при явном подтверждении от автора темы.
+                        </li>
+                        <li>
+                            <strong>Критик #1 (LLM #2)</strong><br>
+                            Второй LLM-вызов проверяет JSON от экстрактора: удаляет слабые темы,
+                            сливает дубли по первопричине, валидирует id по индексу сообщений,
+                            проверяет дубликаты. Если критик вернул менее 50% тем — срабатывает
+                            fallback на данные до критика.
+                        </li>
+                        <li>
+                            <strong>Критик #2 per-topic (LLM #3)</strong><br>
+                            Отдельный LLM-запрос на каждую тему с контекстным окном (20 сообщений
+                            до anchor, 80 после + все сообщения автора темы). Ишет кросс-юзер
+                            конфликты, проверяет соответствие решения логу, валидирует заголовок.
+                            Принудительно восстанавливает оригинальный id, если LLM его изменил.
+                        </li>
+                        <li>
+                            <strong>Верификация по документации (LLM #4)</strong><br>
+                            Четвёртый LLM-вызов сверяет каждое решение/совет с официальной
+                            документацией проекта (README + FAQ с GitHub). <code>verified=true</code>
+                            — только если в документации есть точное совпадение. При конфликте
+                            (маркер «расходятся») — принудительно <code>verified=false</code>.
+                        </li>
+                        <li>
+                            <strong>Финальный генератор (LLM #5)</strong><br>
+                            Пятый LLM-вызов собирает HTML-текст для Telegram по жёсткому шаблону
+                            с разделами «Главное за день», «Новости и релизы», «Проблемы и решения»,
+                            «Советы дня». Каждый пункт содержит ссылку на исходное сообщение.
+                        </li>
+                        <li>
+                            <strong>Код-валидатор (0 токенов, без LLM)</strong><br>
+                            Детерминированная проверка финального текста: замена Markdown на HTML,
+                            проверка баланса тегов, удаление пустых разделов, проверка на заглушки,
+                            схлопывание лишних пустых строк.
+                        </li>
+                        <li>
+                            <strong>Логгирование и отправка</strong><br>
+                            В таблицу <code>digest_runs</code> (Supabase/PostgreSQL) записывается
+                            полная информация о запуске: статусы этапов, токены, стоимость, ошибки.
+                            Затем дайджест отправляется в чат модераторов и, после очистки
+                            диагностики, в публичный канал.
+                        </li>
+                    </ol>
+                </section>
+            </div>
+
+            <!-- ===== GROUP: Правила ===== -->
+            <div class="docs-group">
+                <div class="docs-group-title">🎯 Правила и фильтрация</div>
+
+                <section class="docs-section" id="tier-rules">
+                    <h2>🎯 Правила отбора тем: Tier 1 и Tier 2</h2>
+                    <p>
+                        Система фильтрует сообщения по двухуровневой системе приоритетов
+                        <strong>до того, как LLM начнёт извлекать темы</strong>. Это не решение модели —
+                        это жёсткие правила в промпте экстрактора, которые отсекают шум
+                        и выделяют то, что действительно стоит внимания модератора.
+                    </p>
+
+                    <h3>Tier 1 — ВСЕГДА включать</h3>
+                    <p>Даже при одном участнике и без ответов, если есть любой из маркеров:</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Маркер</th><th>Пример</th><th>НЕ пример</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Модель устройства + тех. симптом</td><td><code>KN-2310 + SIGSEGV</code></td><td>«у меня KN-1810, всё ок»</td></tr>
+                                <tr><td>Код ошибки + контекст</td><td><code>curl response code: 400 в логе xkeen</code></td><td>«ошибка какая-то»</td></tr>
+                                <tr><td>Версия + явная проблема</td><td><code>xray 26.6.1 + вылетает</code></td><td>«версия последняя, нормально»</td></tr>
+                            </tbody>
+                        </table>
                     </div>
+                    <p>
+                        <strong>Допустимые симптомы в Tier 1:</strong> <code>ошибка</code>, <code>краш</code>,
+                        <code>не стартует</code>, <code>SIGSEGV</code>, <code>504</code>,
+                        <code>таймаут</code>, <code>зависает</code>.<br>
+                        <strong>НЕ считаются симптомами:</strong> «не работает», «проблема», «не получается».
+                    </p>
 
-                    <div class="pipeline-row">
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node validator-node"><span class="pipe-icon">✅</span>Code<br/>validator<br/>(0 tokens)</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">📊</span>Logging<br/>+ SQL</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">📨</span>Send to<br/>moderators</div>
+                    <h3>Tier 2 — Включать при наличии обсуждения</h3>
+                    <p>Достаточно <strong>одного</strong> из критериев:</p>
+                    <div class="card-grid">
+                        <div class="card"><h3>3+ участника</h3><p>Минимум 3 автора в теме</p></div>
+                        <div class="card"><h3>2+ с конфигом/скриншотом</h3><p>Детальное техническое обсуждение</p></div>
+                        <div class="card"><h3>1+ с конкретным решением</h3><p>Модератор или автор предложили решение</p></div>
+                        <div class="card"><h3>Инфраструктурная ситуация</h3><p>РКН, VPS недоступен, бан IP — даже при 2 участниках</p></div>
                     </div>
+                    <p>
+                        <strong>⚠️ Важно:</strong> подтверждение от автора может прийти значительно позже
+                        в логе (10–100 сообщений спустя). Тема не считается «без подтверждения»,
+                        если ответ автора просто далеко от жалобы.
+                    </p>
 
-                    <div class="pipeline-row">
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">🧹</span>Clean<br/>for channel</div>
-                        <span class="pipe-arrow">→</span>
-                        <div class="pipe-node"><span class="pipe-icon">📨</span>Send to<br/>public channel</div>
+                    <h3>Что НЕ включается в дайджест</h3>
+                    <ul class="plain-list">
+                        <li>❌ 1 участник + нет ответов + нет маркеров Tier 1</li>
+                        <li>❌ Общие вопросы без симптома («как настроить X?», «где почитать?»)</li>
+                        <li>❌ Упоминание модели/версии без проблемы («у меня KN-1810, всё ок»)</li>
+                        <li>❌ Tip с одной голой ссылкой без описания ЧТО делает инструмент</li>
+                        <li>❌ Решение/воркэраунд от третьего лица без подтверждения автора темы</li>
+                    </ul>
+
+                    <h3>Примеры из реальной работы</h3>
+                    <div class="table-wrapper">
+                        <table class="table-plain">
+                            <thead>
+                                <tr><th>Сообщение</th><th>Вердикт</th><th>Почему</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>«XKeen падает с SIGSEGV на KN-2310»</td><td><span class="status-badge green">✅ problems</span></td><td>Tier 1: модель + SIGSEGV</td></tr>
+                                <tr><td>«curl response code: 400 в логе xkeen»</td><td><span class="status-badge green">✅ problems</span></td><td>Tier 1: код ошибки + контекст</td></tr>
+                                <tr><td>«3 участника обсуждают Warp, решения нет»</td><td><span class="status-badge green">✅ problems</span></td><td>Tier 2: 3+ участника</td></tr>
+                                <tr><td>«Как настроить X, если РКН заблокировал подсеть»</td><td><span class="status-badge green">✅ problems</span></td><td>Tier 2: инфраструктурная ситуация</td></tr>
+                                <tr><td>«Не работает интернет» (1 чел., без деталей)</td><td><span class="status-badge red">❌ не включать</span></td><td>Нет ни симптома, ни кода, ни версии</td></tr>
+                                <tr><td>«У меня KN-1810, всё ок»</td><td><span class="status-badge red">❌ не включать</span></td><td>Упоминание без проблемы</td></tr>
+                                <tr><td>«arshteyn пустил трафик через warp, я составил белый список»</td><td><span class="status-badge red">❌ solution: null</span></td><td>Автор темы не подтвердил</td></tr>
+                                <tr><td>«XKeen-UI от zxc-rv — Ссылка на репозиторий»</td><td><span class="status-badge red">❌ не включать</span></td><td>Tip без описания ЧТО делает</td></tr>
+                            </tbody>
+                        </table>
                     </div>
+                </section>
 
-                </div>
-            </div>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-top: -16px; margin-bottom: 0;">
-                <span style="display: inline-block; background: #132f1a; border: 1px solid #1a4a2a; border-radius: 3px; padding: 1px 6px; font-size: 11px; color: var(--accent-green);">🤖 LLM-этапы</span>
-                <span style="display: inline-block; background: #2d2410; border: 1px solid #4b3a16; border-radius: 3px; padding: 1px 6px; font-size: 11px; color: var(--accent-yellow); margin-left: 6px;">✅ Валидатор (0 токенов)</span>
-            </p>
-        </section>
-
-        <!-- How it works -->
-        <section>
-            <h2>Как это работает</h2>
-
-            <ol class="step-list">
-                <li>
-                    <strong>Сбор и фильтрация данных</strong><br>
-                    Workflow забирает историю чата через Telegram GramPro API, отфильтровывая
-                    сообщения ботов, предыдущие дайджесты (по маркеру <code>📋 Дайджест</code>
-                    и <code>🔗</code>) и сообщения вне временного окна. После фильтрации
-                    формируется структурированный лог с индексом сообщений и списком
-                    anchor-кандидатов — сообщений с признаками жалоб.
-                </li>
-                <li>
-                    <strong>Извлечение тем (LLM #1 — DeepSeek V4 Flash)</strong><br>
-                    Модель получает индекс, anchor-кандидаты и полный лог чата. Извлекает
-                    до 12 проблем, 5 советов и релизы по строгим Tier-правилам. Поле
-                    <code>solution</code> на этом этапе запрещено — проставляется только
-                    при явном подтверждении от автора темы.
-                </li>
-                <li>
-                    <strong>Критик #1 (LLM #2)</strong><br>
-                    Второй LLM-вызов проверяет JSON от экстрактора: удаляет слабые темы,
-                    сливает дубли по первопричине, валидирует id по индексу сообщений,
-                    проверяет дубликаты. Если критик вернул менее 50% тем — срабатывает
-                    fallback на данные до критика.
-                </li>
-                <li>
-                    <strong>Критик #2 per-topic (LLM #3)</strong><br>
-                    Отдельный LLM-запрос на каждую тему с контекстным окном (20 сообщений
-                    до anchor, 80 после + все сообщения автора темы). Ищет кросс-юзер
-                    конфликты, проверяет соответствие решения логу, валидирует заголовок.
-                    Принудительно восстанавливает оригинальный id, если LLM его изменил.
-                </li>
-                <li>
-                    <strong>Верификация по документации (LLM #4)</strong><br>
-                    Четвёртый LLM-вызов сверяет каждое решение/совет с официальной
-                    документацией проекта (README + FAQ с GitHub). <code>verified=true</code>
-                    — только если в документации есть точное совпадение. При конфликте
-                    (маркер «расходятся») — принудительно <code>verified=false</code>.
-                </li>
-                <li>
-                    <strong>Финальный генератор (LLM #5)</strong><br>
-                    Пятый LLM-вызов собирает HTML-текст для Telegram по жёсткому шаблону
-                    с разделами «Главное за день», «Новости и релизы», «Проблемы и решения»,
-                    «Советы дня». Каждый пункт содержит ссылку на исходное сообщение.
-                </li>
-                <li>
-                    <strong>Код-валидатор (0 токенов, без LLM)</strong><br>
-                    Детерминированная проверка финального текста: замена Markdown на HTML,
-                    проверка баланса тегов, удаление пустых разделов, проверка на заглушки,
-                    схлопывание лишних пустых строк.
-                </li>
-                <li>
-                    <strong>Логгирование и отправка</strong><br>
-                    В таблицу <code>digest_runs</code> (Supabase/PostgreSQL) записывается
-                    полная информация о запуске: статусы этапов, токены, стоимость, ошибки.
-                    Затем дайджест отправляется в чат модераторов и, после очистки
-                    диагностики, в публичный канал.
-                </li>
-            </ol>
-        </section>
-
-        <!-- Tier rules -->
-        <section>
-            <h2>🎯 Правила отбора тем: Tier 1 и Tier 2</h2>
-            <p>
-                Система фильтрует сообщения по двухуровневой системе приоритетов
-                <strong>до того, как LLM начнёт извлекать темы</strong>. Это не решение модели —
-                это жёсткие правила в промпте экстрактора, которые отсекают шум
-                и выделяют то, что действительно стоит внимания модератора.
-            </p>
-
-            <h3>Tier 1 — ВСЕГДА включать</h3>
-            <p>Даже при одном участнике и без ответов, если есть любой из маркеров:</p>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Маркер</th>
-                            <th>Пример</th>
-                            <th>НЕ пример</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Модель устройства + тех. симптом</td>
-                            <td><code>KN-2310 + SIGSEGV</code></td>
-                            <td>«у меня KN-1810, всё ок»</td>
-                        </tr>
-                        <tr>
-                            <td>Код ошибки + контекст</td>
-                            <td><code>curl response code: 400 в логе xkeen</code></td>
-                            <td>«ошибка какая-то»</td>
-                        </tr>
-                        <tr>
-                            <td>Версия + явная проблема</td>
-                            <td><code>xray 26.6.1 + вылетает</code></td>
-                            <td>«версия последняя, нормально»</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p style="font-size: 13px;">
-                <strong>Допустимые симптомы в Tier 1:</strong> <code>ошибка</code>, <code>краш</code>,
-                <code>не стартует</code>, <code>SIGSEGV</code>, <code>504</code>,
-                <code>таймаут</code>, <code>зависает</code>.<br>
-                <strong>НЕ считаются симптомами:</strong> «не работает», «проблема», «не получается».
-            </p>
-
-            <h3>Tier 2 — Включать при наличии обсуждения</h3>
-            <p>Достаточно <strong>одного</strong> из критериев:</p>
-            <div class="card-grid">
-                <div class="card">
-                    <h3>3+ участника</h3>
-                    <p>Минимум 3 автора в теме</p>
-                </div>
-                <div class="card">
-                    <h3>2+ с конфигом/скриншотом</h3>
-                    <p>Детальное техническое обсуждение</p>
-                </div>
-                <div class="card">
-                    <h3>1+ с конкретным решением</h3>
-                    <p>Модератор или автор предложили решение</p>
-                </div>
-                <div class="card">
-                    <h3>Инфраструктурная ситуация</h3>
-                    <p>РКН, VPS недоступен, бан IP — даже при 2 участниках</p>
-                </div>
-            </div>
-            <p>
-                <strong>⚠️ Важно:</strong> подтверждение от автора может прийти значительно позже
-                в логе (10–100 сообщений спустя). Тема не считается «без подтверждения»,
-                если ответ автора просто далеко от жалобы.
-            </p>
-
-            <h3>Что НЕ включается в дайджест</h3>
-            <ul style="list-style: none; padding-left: 0; margin: 12px 0;">
-                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
-                    ❌ 1 участник + нет ответов + нет маркеров Tier 1
-                </li>
-                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
-                    ❌ Общие вопросы без симптома («как настроить X?», «где почитать?»)
-                </li>
-                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
-                    ❌ Упоминание модели/версии без проблемы («у меня KN-1810, всё ок»)
-                </li>
-                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
-                    ❌ Tip с одной голой ссылкой без описания ЧТО делает инструмент
-                </li>
-                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
-                    ❌ Решение/воркэраунд от третьего лица без подтверждения автора темы
-                </li>
-            </ul>
-
-            <h3>Примеры из реальной работы</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Сообщение</th>
-                            <th>Вердикт</th>
-                            <th>Почему</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>«XKeen падает с SIGSEGV на KN-2310»</td>
-                            <td><span class="status-badge green">✅ problems</span></td>
-                            <td>Tier 1: модель + SIGSEGV</td>
-                        </tr>
-                        <tr>
-                            <td>«curl response code: 400 в логе xkeen»</td>
-                            <td><span class="status-badge green">✅ problems</span></td>
-                            <td>Tier 1: код ошибки + контекст</td>
-                        </tr>
-                        <tr>
-                            <td>«3 участника обсуждают Warp, решения нет»</td>
-                            <td><span class="status-badge green">✅ problems</span></td>
-                            <td>Tier 2: 3+ участника</td>
-                        </tr>
-                        <tr>
-                            <td>«Как настроить X, если РКН заблокировал подсеть»</td>
-                            <td><span class="status-badge green">✅ problems</span></td>
-                            <td>Tier 2: инфраструктурная ситуация</td>
-                        </tr>
-                        <tr>
-                            <td>«Не работает интернет» (1 чел., без деталей)</td>
-                            <td><span class="status-badge red">❌ не включать</span></td>
-                            <td>Нет ни симптома, ни кода, ни версии</td>
-                        </tr>
-                        <tr>
-                            <td>«У меня KN-1810, всё ок»</td>
-                            <td><span class="status-badge red">❌ не включать</span></td>
-                            <td>Упоминание без проблемы</td>
-                        </tr>
-                        <tr>
-                            <td>«arshteyn пустил трафик через warp, я составил белый список»</td>
-                            <td><span class="status-badge red">❌ solution: null</span></td>
-                            <td>Автор темы не подтвердил</td>
-                        </tr>
-                        <tr>
-                            <td>«XKeen-UI от zxc-rv — Ссылка на репозиторий»</td>
-                            <td><span class="status-badge red">❌ не включать</span></td>
-                            <td>Tip без описания ЧТО делает</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Quality funnel -->
-        <section>
-            <h2>📊 Воронка качества: от сырого лога до дайджеста</h2>
-            <p>
-                Каждый этап конвейера отсеивает часть сообщений. От <strong>1500 исходных</strong>
-                до читателя доходят только <strong>8–12 тем дня</strong> — это и есть результат
-                работы Tier 1/2 правил, двух критиков и верификатора. Цифры ниже — типичный
-                прогон (пример за 11.07.2026: 145 сообщений → 13 тем → 12 проблем + 1 tip).
-            </p>
-            <div class="mermaid-legend">
-                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка без LLM</span>
-                <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>LLM-этапы</span>
-                <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>финальный результат</span>
-            </div>
-            <div class="mermaid-container">
+                <section class="docs-section" id="quality-funnel">
+                    <h2>📊 Воронка качества: от сырого лога до дайджеста</h2>
+                    <p>
+                        Каждый этап конвейера отсеивает часть сообщений. От <strong>1500 исходных</strong>
+                        до читателя доходят только <strong>8–12 тем дня</strong> — это и есть результат
+                        работы Tier 1/2 правил, двух критиков и верификатора. Цифры ниже — типичный
+                        прогон (пример за 11.07.2026: 145 сообщений → 13 тем → 12 проблем + 1 tip).
+                    </p>
+                    <div class="mermaid-legend">
+                        <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка без LLM</span>
+                        <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>LLM-этапы</span>
+                        <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>финальный результат</span>
+                    </div>
+                    <div class="mermaid-container">
 <pre class="mermaid">
 flowchart TD
-    A["📥 1500 сообщений<br/>Telegram GramPro API<br/>(лимит getHistory)"]
-    B["~145 сообщений<br/>Фильтр по MSK + бот/дайджест"]
-    C["~30 якорных кандидатов<br/>Regex-фильтр жалоб"]
-    D["13 тем в JSON<br/>LLM #1 Extractor + Tier 1/2"]
-    E["13 тем<br/>LLM #2 Critic #1"]
-    F["13 тем проверено<br/>LLM #3 Critic #2 per-topic"]
-    G["13 тем<br/>LLM #4 Verifier"]
-    H["📰 12 проблем + 1 tip<br/>+ 1 highlight"]
+    A["📥 1500 сообщений&lt;br/&gt;Telegram GramPro API&lt;br/&gt;(лимит getHistory)"]
+    B["~145 сообщений&lt;br/&gt;Фильтр по MSK + бот/дайджест"]
+    C["~30 якорных кандидатов&lt;br/&gt;Regex-фильтр жалоб"]
+    D["13 тем в JSON&lt;br/&gt;LLM #1 Extractor + Tier 1/2"]
+    E["13 тем&lt;br/&gt;LLM #2 Critic #1"]
+    F["13 тем проверено&lt;br/&gt;LLM #3 Critic #2 per-topic"]
+    G["13 тем&lt;br/&gt;LLM #4 Verifier"]
+    H["📰 12 проблем + 1 tip&lt;br/&gt;+ 1 highlight"]
 
-    A -->|"только MSK-вчера"| B
-    B -->|"~80% не жалобы"| C
-    C -->|"Tier 1/2 + лимиты"| D
-    D -->|"дубли/слабые"| E
-    E -->|"per-topic защита id"| F
-    F -->|"verified / officialNote"| G
-    G -->|"highlight + остальное"| H
+    A --&gt;|"только MSK-вчера"| B
+    B --&gt;|"~80% не жалобы"| C
+    C --&gt;|"Tier 1/2 + лимиты"| D
+    D --&gt;|"дубли/слабые"| E
+    E --&gt;|"per-topic защита id"| F
+    F --&gt;|"verified / officialNote"| G
+    G --&gt;|"highlight + остальное"| H
 
     style A fill:#1f2937,stroke:#58a6ff,color:#e6edf3
     style B fill:#1f2937,stroke:#58a6ff,color:#e6edf3
@@ -1187,77 +1124,50 @@ flowchart TD
     style G fill:#132f1a,stroke:#3fb950,color:#e6edf3
     style H fill:#2d2410,stroke:#d29922,color:#e6edf3
 </pre>
+                    </div>
+                    <p class="mermaid-caption">
+                        Из 1500 загруженных сообщений остаётся <strong>~145 (10%)</strong> за вчерашние MSK-сутки.
+                        Regex-фильтр жалоб оставляет <strong>~30 кандидатов</strong>, Tier 1/2 — 12–13 тем.
+                    </p>
+                </section>
             </div>
-            <p class="mermaid-caption">
-                Из 1500 загруженных сообщений остаётся <strong>~145 (10%)</strong> за вчерашние MSK-сутки.
-                Regex-фильтр жалоб оставляет <strong>~30 кандидатов</strong>, Tier 1/2 — 12–13 тем.
-            </p>
-        </section>
 
-        <!-- LLM stages -->
-        <section>
-            <h2>Этапы LLM-конвейера</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Этап</th>
-                            <th>Роль</th>
-                            <th>Модель</th>
-                            <th>Особенности</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>LLM #1 — Экстрактор</td>
-                            <td>Извлекает темы из лога</td>
-                            <td><code>DeepSeek V4 Flash</code></td>
-                            <td>reasoning high, до 12 проблем, 5 советов</td>
-                        </tr>
-                        <tr>
-                            <td>LLM #2 — Критик #1</td>
-                            <td>Валидация JSON целиком</td>
-                            <td><code>DeepSeek V4 Flash</code></td>
-                            <td>Удаление слабых тем, слияние дублей, fallback при &lt;50%</td>
-                        </tr>
-                        <tr>
-                            <td>LLM #3 — Критик #2</td>
-                            <td>Per-topic проверка</td>
-                            <td><code>DeepSeek V4 Flash</code></td>
-                            <td>N запросов (по числу тем), контекст ±50 сообщений</td>
-                        </tr>
-                        <tr>
-                            <td>LLM #4 — Верификатор</td>
-                            <td>Сверка с документацией</td>
-                            <td><code>DeepSeek V4 Flash</code></td>
-                            <td>verified=true только при точном совпадении</td>
-                        </tr>
-                        <tr>
-                            <td>LLM #5 — Генератор</td>
-                            <td>Формирует финальный текст</td>
-                            <td><code>DeepSeek V4 Flash</code></td>
-                            <td>HTML-шаблон, статусы ✅/⚠️/⛔</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+            <!-- ===== GROUP: LLM-этапы ===== -->
+            <div class="docs-group">
+                <div class="docs-group-title">🤖 LLM-этапы</div>
 
-        <!-- Data shape transformation -->
-        <section>
-            <h2>🔄 Трансформация данных по этапам</h2>
-            <p>
-                На каждом этапе данные меняют форму: сырой массив сообщений превращается
-                в структурированный JSON, затем в HTML-текст, затем в строку в Supabase.
-                Понимание этой трансформации помогает при отладке.
-            </p>
-            <div class="mermaid-legend">
-                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка без LLM</span>
-                <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>LLM (структура)</span>
-                <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>LLM (текст)</span>
-                <span class="item"><span class="dot" style="background:#1c2128; border:1px solid #bc8cff;"></span>SQL</span>
-            </div>
-            <div class="mermaid-container">
+                <section class="docs-section" id="llm-stages">
+                    <h2>Этапы LLM-конвейера</h2>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Этап</th><th>Роль</th><th>Модель</th><th>Особенности</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>LLM #1 — Экстрактор</td><td>Извлекает темы из лога</td><td><code>DeepSeek V4 Flash</code></td><td>reasoning high, до 12 проблем, 5 советов</td></tr>
+                                <tr><td>LLM #2 — Критик #1</td><td>Валидация JSON целиком</td><td><code>DeepSeek V4 Flash</code></td><td>Удаление слабых тем, слияние дублей, fallback при &lt;50%</td></tr>
+                                <tr><td>LLM #3 — Критик #2</td><td>Per-topic проверка</td><td><code>DeepSeek V4 Flash</code></td><td>N запросов (по числу тем), контекст ±50 сообщений</td></tr>
+                                <tr><td>LLM #4 — Верификатор</td><td>Сверка с документацией</td><td><code>DeepSeek V4 Flash</code></td><td>verified=true только при точном совпадении</td></tr>
+                                <tr><td>LLM #5 — Генератор</td><td>Формирует финальный текст</td><td><code>DeepSeek V4 Flash</code></td><td>HTML-шаблон, статусы ✅/⚠️/⛔</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="docs-section" id="data-shape">
+                    <h2>🔄 Трансформация данных по этапам</h2>
+                    <p>
+                        На каждом этапе данные меняют форму: сырой массив сообщений превращается
+                        в структурированный JSON, затем в HTML-текст, затем в строку в Supabase.
+                        Понимание этой трансформации помогает при отладке.
+                    </p>
+                    <div class="mermaid-legend">
+                        <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка без LLM</span>
+                        <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>LLM (структура)</span>
+                        <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>LLM (текст)</span>
+                        <span class="item"><span class="dot" style="background:#1c2128; border:1px solid #bc8cff;"></span>SQL</span>
+                    </div>
+                    <div class="mermaid-container">
 <pre class="mermaid">
 flowchart LR
     A["&lt;b&gt;Get chat history&lt;/b&gt;&lt;br/&gt;Array&lt;Message&gt;&lt;br/&gt;{id, text, sender, date}"]
@@ -1286,256 +1196,66 @@ flowchart LR
     style J fill:#2d2410,stroke:#d29922,color:#e6edf3
     style K fill:#1c2128,stroke:#bc8cff,color:#e6edf3
 </pre>
+                    </div>
+                    <p class="mermaid-caption">
+                        Ключевая трансформация: после LLM #1 данные становятся <strong>структурированными</strong>
+                        (JSON с типизированными полями), а после LLM #5 — <strong>неструктурированным</strong> HTML-текстом.
+                        Validator возвращает данные в string-форму для финальной сборки.
+                    </p>
+                </section>
+
+                <section class="docs-section" id="key-metrics">
+                    <h2>Ключевые метрики</h2>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Метрика</th><th>Значение</th></tr></thead>
+                            <tbody>
+                                <tr><td>Лимит проблем</td><td>до 12</td></tr>
+                                <tr><td>Лимит советов</td><td>до 5</td></tr>
+                                <tr><td>Контекстное окно Critic #2</td><td>±50 (20 до, 80 после)</td></tr>
+                                <tr><td>Лимит сообщений за раз</td><td>1500</td></tr>
+                                <tr><td>Максимальная длина одной части</td><td>3500 символов</td></tr>
+                                <tr><td>LLM-вызовов за запуск</td><td>5 + (N тем × 1 для Critic #2)</td></tr>
+                                <tr><td>Провайдер</td><td>OpenRouter (DeepSeek)</td></tr>
+                                <tr><td>Запуск</td><td>Ежедневно в 00:21 МСК</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
-            <p class="mermaid-caption">
-                Ключевая трансформация: после LLM #1 данные становятся <strong>структурированными</strong>
-                (JSON с типизированными полями), а после LLM #5 — <strong>неструктурированным</strong> HTML-текстом.
-                Validator возвращает данные в string-форму для финальной сборки.
-            </p>
-        </section>
 
-        <!-- Key metrics -->
-        <section>
-            <h2>Ключевые метрики</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Метрика</th>
-                            <th>Значение</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Лимит проблем</td><td>до 12</td></tr>
-                        <tr><td>Лимит советов</td><td>до 5</td></tr>
-                        <tr><td>Контекстное окно Critic #2</td><td>±50 (20 до, 80 после)</td></tr>
-                        <tr><td>Лимит сообщений за раз</td><td>1500</td></tr>
-                        <tr><td>Максимальная длина одной части</td><td>3500 символов</td></tr>
-                        <tr><td>LLM-вызовов за запуск</td><td>5 + (N тем × 1 для Critic #2)</td></tr>
-                        <tr><td>Провайдер</td><td>OpenRouter (DeepSeek)</td></tr>
-                        <tr><td>Запуск</td><td>Ежедневно в 00:21 МСК</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+            <!-- ===== GROUP: Архитектура ===== -->
+            <div class="docs-group">
+                <div class="docs-group-title">⚙️ Архитектура</div>
 
-        <!-- Key features -->
-        <section>
-            <h2>Архитектурные особенности</h2>
-            <ul class="feature-list">
-                <li>
-                    <strong>Факт-чекинг через id</strong>
-                    Каждая тема обязана иметь ссылку на реальное сообщение в чате.
-                    LLM не может добавить факт без подтверждения — id проверяется
-                    по индексу сообщений на нескольких этапах.
-                </li>
-                <li>
-                    <strong>Детекция кросс-юзер конфликтов</strong>
-                    Если один пользователь пишет «помогло», а другой в той же теме
-                    «не работает» — Critic #2 per-topic понижает статус до
-                    «предложено» с маркером «результаты расходятся».
-                </li>
-                <li>
-                    <strong>Верификация по официальной документации</strong>
-                    Четвёртый LLM-вызов сверяет каждое решение с README и FAQ
-                    проекта. Подтверждённые и неподтверждённые решения явно
-                    разделены (verified true/false).
-                </li>
-                <li>
-                    <strong>Принудительная защита id</strong>
-                    Нормализатор ответов Critic #2 принудительно восстанавливает
-                    оригинальный id, если LLM его изменил — несмотря на прямой
-                    запрет в промпте.
-                </li>
-                <li>
-                    <strong>Fallback-система</strong>
-                    При сбое любого LLM-этапа используются данные предыдущего
-                    этапа. Критик #1 работает с continueOnFail. Дайджест не
-                    теряется при единичных сбоях.
-                </li>
-                <li>
-                    <strong>Прозрачная диагностика</strong>
-                    В футере каждого дайджеста — статус по каждому этапу
-                    с вердиктом «всё штатно / желательна проверка / нужна
-                    ручная проверка».
-                </li>
-                <li>
-                    <strong>Полное логгирование</strong>
-                    Каждый запуск пишется в Supabase: токены, стоимость,
-                    статусы этапов, HTTP-статусы, ошибки — готовая система
-                    мониторинга SLA.
-                </li>
-            </ul>
-        </section>
+                <section class="docs-section" id="arch-features">
+                    <h2>Архитектурные особенности</h2>
+                    <ul class="feature-list">
+                        <li><strong>Факт-чекинг через id</strong>Каждая тема обязана иметь ссылку на реальное сообщение в чате. LLM не может добавить факт без подтверждения — id проверяется по индексу сообщений на нескольких этапах.</li>
+                        <li><strong>Детекция кросс-юзер конфликтов</strong>Если один пользователь пишет «помогло», а другой в той же теме «не работает» — Critic #2 per-topic понижает статус до «предложено» с маркером «результаты расходятся».</li>
+                        <li><strong>Верификация по официальной документации</strong>Четвёртый LLM-вызов сверяет каждое решение с README и FAQ проекта. Подтверждённые и неподтверждённые решения явно разделены (verified true/false).</li>
+                        <li><strong>Принудительная защита id</strong>Нормализатор ответов Critic #2 принудительно восстанавливает оригинальный id, если LLM его изменил — несмотря на прямой запрет в промпте.</li>
+                        <li><strong>Fallback-система</strong>При сбое любого LLM-этапа используются данные предыдущего этапа. Критик #1 работает с continueOnFail. Дайджест не теряется при единичных сбоях.</li>
+                        <li><strong>Прозрачная диагностика</strong>В футере каждого дайджеста — статус по каждому этапу с вердиктом «всё штатно / желательна проверка / нужна ручная проверка».</li>
+                        <li><strong>Полное логгирование</strong>Каждый запуск пишется в Supabase: токены, стоимость, статусы этапов, HTTP-статусы, ошибки — готовая система мониторинга SLA.</li>
+                    </ul>
+                </section>
 
-        <!-- Cost / ROI -->
-        <section>
-            <h2>💵 Стоимость и окупаемость</h2>
-            <p>
-                Дайджест стоит дешевле чашки кофе в месяц. Экономит не от ручной модерации,
-                а от <strong>чтения</strong> — админ/участник получает только важное, не листая 145+ сообщений.
-            </p>
-
-            <h3>Реальные прогоны (production)</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Дата</th>
-                            <th>Сообщений</th>
-                            <th>Тем в дайджесте</th>
-                            <th>Токены (in / out)</th>
-                            <th>Стоимость</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>03.07.2026</td>
-                            <td>204</td>
-                            <td>12 (8 + 2 + 1 + 1 highlight)</td>
-                            <td>110 492 / 25 422</td>
-                            <td>$0.01555</td>
-                        </tr>
-                        <tr>
-                            <td>09.07.2026</td>
-                            <td>145</td>
-                            <td>11 (8 + 3 + 1 highlight)</td>
-                            <td>91 424 / 32 619</td>
-                            <td>$0.01461</td>
-                        </tr>
-                        <tr>
-                            <td>11.07.2026</td>
-                            <td>145</td>
-                            <td>13 (12 + 1 + 1 highlight)</td>
-                            <td>113 650 / 44 251</td>
-                            <td>$0.01981</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Среднее</strong></td>
-                            <td><strong>~165</strong></td>
-                            <td><strong>~12</strong></td>
-                            <td><strong>~140 000</strong></td>
-                            <td><strong>~$0.017</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p>
-                <strong>В месяц (30 дней):</strong> ~$0.50<br>
-                <strong>В год:</strong> ~$6.20
-            </p>
-
-            <h3>Что экономим</h3>
-            <ul class="feature-list">
-                <li>
-                    <strong>Время чтения</strong> — без дайджеста ~10 мин/день на скролл 145+ сообщений,
-                    с дайджестом ~1–2 мин на 12 тем по одной строке
-                </li>
-                <li>
-                    <strong>Контекст</strong> — без дайджеста нужно скроллить вверх-вниз, чтобы понять,
-                    что решилось, а что висит. Дайджест даёт это в одном экране.
-                </li>
-            </ul>
-
-            <h3>Что НЕ пропустишь в дайджесте</h3>
-            <p>
-                Дайджест гарантированно подсвечивает то, что в чате часто теряется:
-            </p>
-            <ul class="feature-list">
-                <li>
-                    <strong>🏆 Releases</strong> — новые версии XKeen/Xray (иначе можно месяц не замечать анонс)
-                </li>
-                <li>
-                    <strong>⚠️ Cross-user конфликты</strong> — когда один юзер пишет «помогло»,
-                    а другой «не работает» (в чате это выглядит как 2 обычных сообщения в разных ветках)
-                </li>
-                <li>
-                    <strong>🔗 Решения из официальной документации</strong> — LLM #4 находит в README/FAQ
-                    то, что мимо чата вообще не проходило
-                </li>
-                <li>
-                    <strong>📌 Советы дня</strong> — пользовательские находки (порты, генераторы, патчи),
-                    которые в чате разбросаны по разным дням
-                </li>
-                <li>
-                    <strong>Топ-1 проблема дня</strong> (<code>highlight</code>) — выбирается по <code>msgCount</code>,
-                    не по времени публикации (без дайджеста новая проблема тонет в потоке)
-                </li>
-            </ul>
-
-            <h3>Распределение расходов по этапам (средний прогон)</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Этап</th>
-                            <th>Доля токенов</th>
-                            <th>Доля стоимости</th>
-                            <th>Зачем он нужен</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>LLM #1 — Извлечение</td>
-                            <td>~15%</td>
-                            <td>~$0.0025</td>
-                            <td>Первичный отбор тем</td>
-                        </tr>
-                        <tr>
-                            <td>LLM #2 — Критик #1</td>
-                            <td>~5%</td>
-                            <td>~$0.0008</td>
-                            <td>Валидация всего JSON</td>
-                        </tr>
-                        <tr>
-                            <td><strong>LLM #3 — Критик #2 per-topic</strong></td>
-                            <td><strong>~60%</strong></td>
-                            <td><strong>~$0.010</strong></td>
-                            <td><strong>Глубокая проверка каждой темы</strong></td>
-                        </tr>
-                        <tr>
-                            <td>LLM #4 — Верификация по докам</td>
-                            <td>~10%</td>
-                            <td>~$0.0017</td>
-                            <td>Сверка с README/FAQ</td>
-                        </tr>
-                        <tr>
-                            <td>LLM #5 — Финальный генератор</td>
-                            <td>~10%</td>
-                            <td>~$0.0017</td>
-                            <td>HTML-текст для Telegram</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p>
-                <strong>Per-topic Критик #2</strong> — самая дорогая часть (60% токенов), но именно он
-                ловит cross-user конфликты и проверяет каждое решение по контексту.
-                Без него LLM #1 мог бы выдать ложные ✅, и читатель бы их принял на веру.
-            </p>
-            <p style="font-size: 13px; color: var(--text-secondary);">
-                <strong>Модель:</strong> <code>deepseek/deepseek-v4-flash-20260423</code> через OpenRouter<br>
-                <strong>Параметры:</strong> <code>temperature: 0</code>, <code>reasoning: { effort: "high" }</code><br>
-                <strong>Fallback-цепочка:</strong> <code>GMI → DeepSeek</code> (исключая <code>Cloudflare</code>, <code>DeepInfra</code>)
-            </p>
-        </section>
-
-        <!-- Conflict detection flow -->
-        <section>
-            <h2>⚔️ Детекция cross-user конфликтов: как это работает</h2>
-            <p>
-                Самый интересный кусок системы: <strong>LLM #3 (Critic #2) per-topic</strong> умеет
-                отличать <strong>истинный</strong> конфликт (два разных юзера с разными
-                результатами) от <strong>ложного</strong> (просто похожие слова в разных темах).
-                Истинный → решение понижается до «предложено» с маркером «результаты расходятся».
-            </p>
-            <div class="mermaid-legend">
-                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>узел проверки</span>
-                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #8b949e;"></span>без изменений</span>
-                <span class="item"><span class="dot" style="background:#2d1414; border:1px solid #f85149;"></span>истинный конфликт</span>
-                <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>ложный (игнор)</span>
-            </div>
-            <div class="mermaid-container">
+                <section class="docs-section" id="conflict">
+                    <h2>⚔️ Детекция cross-user конфликтов: как это работает</h2>
+                    <p>
+                        Самый интересный кусок системы: <strong>LLM #3 (Critic #2) per-topic</strong> умеет
+                        отличать <strong>истинный</strong> конфликт (два разных юзера с разными
+                        результатами) от <strong>ложного</strong> (просто похожие слова в разных темах).
+                        Истинный → решение понижается до «предложено» с маркером «результаты расходятся».
+                    </p>
+                    <div class="mermaid-legend">
+                        <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>узел проверки</span>
+                        <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #8b949e;"></span>без изменений</span>
+                        <span class="item"><span class="dot" style="background:#2d1414; border:1px solid #f85149;"></span>истинный конфликт</span>
+                        <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>ложный (игнор)</span>
+                    </div>
+                    <div class="mermaid-container">
 <pre class="mermaid">
 flowchart TD
     Start["LLM #3 Critic #2&lt;br/&gt;проверяет проблему"]
@@ -1584,74 +1304,136 @@ flowchart TD
     style True fill:#2d1414,stroke:#f85149,color:#e6edf3
     style False fill:#132f1a,stroke:#3fb950,color:#e6edf3
 </pre>
-            </div>
-            <p class="mermaid-caption">
-                Условия проверяются в порядке (1) → (2) → (3). <strong>Достаточно одного несовпадения</strong>,
-                чтобы конфликт считался истинным. Все три должны совпасть, чтобы конфликт был ложным.
-                Для одного автора проверяются только (1) и (3) — устройство не различается.
-            </p>
-        </section>
+                    </div>
+                    <p class="mermaid-caption">
+                        Условия проверяются в порядке (1) → (2) → (3). <strong>Достаточно одного несовпадения</strong>,
+                        чтобы конфликт считался истинным. Все три должны совпасть, чтобы конфликт был ложным.
+                        Для одного автора проверяются только (1) и (3) — устройство не различается.
+                    </p>
+                </section>
 
-        <!-- Tech stack -->
-        <section>
-            <h2>Технический стек</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Компонент</th>
-                            <th>Технология</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Оркестрация</td><td>n8n (workflow editor)</td></tr>
-                        <tr><td>LLM-провайдер</td><td>OpenRouter</td></tr>
-                        <tr><td>Модели</td><td>DeepSeek V4 Flash</td></tr>
-                        <tr><td>Данные чата</td><td>Telegram GramPro API</td></tr>
-                        <tr><td>Документация</td><td>GitHub RAW (README + FAQ)</td></tr>
-                        <tr><td>Хранилище</td><td>PostgreSQL / Supabase</td></tr>
-                        <tr><td>Язык</td><td>JavaScript (n8n Code nodes)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                <section class="docs-section" id="cost">
+                    <h2>💵 Стоимость и окупаемость</h2>
+                    <p>
+                        Дайджест стоит дешевле чашки кофе в месяц. Экономит не от ручной модерации,
+                        а от <strong>чтения</strong> — админ/участник получает только важное, не листая 145+ сообщений.
+                    </p>
 
-        <!-- Status system -->
-        <section>
-            <h2>Система диагностики</h2>
-            <p>
-                В футере каждого дайджеста выводится диагностический блок. Пример:
-            </p>
-            <pre><code>⚙️ Диагностика
+                    <h3>Реальные прогоны (production)</h3>
+                    <div class="table-wrapper">
+                        <table class="table-plain">
+                            <thead>
+                                <tr><th>Дата</th><th>Сообщений</th><th>Тем в дайджесте</th><th>Токены (in / out)</th><th>Стоимость</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>03.07.2026</td><td>204</td><td>12 (8 + 2 + 1 + 1 highlight)</td><td>110 492 / 25 422</td><td>$0.01555</td></tr>
+                                <tr><td>09.07.2026</td><td>145</td><td>11 (8 + 3 + 1 highlight)</td><td>91 424 / 32 619</td><td>$0.01461</td></tr>
+                                <tr><td>11.07.2026</td><td>145</td><td>13 (12 + 1 + 1 highlight)</td><td>113 650 / 44 251</td><td>$0.01981</td></tr>
+                                <tr><td><strong>Среднее</strong></td><td><strong>~165</strong></td><td><strong>~12</strong></td><td><strong>~140 000</strong></td><td><strong>~$0.017</strong></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <strong>В месяц (30 дней):</strong> ~$0.50<br>
+                        <strong>В год:</strong> ~$6.20
+                    </p>
+
+                    <h3>Что экономим</h3>
+                    <ul class="feature-list">
+                        <li><strong>Время чтения</strong> — без дайджеста ~10 мин/день на скролл 145+ сообщений, с дайджестом ~1–2 мин на 12 тем по одной строке</li>
+                        <li><strong>Контекст</strong> — без дайджеста нужно скроллить вверх-вниз, чтобы понять, что решилось, а что висит. Дайджест даёт это в одном экране.</li>
+                    </ul>
+
+                    <h3>Что НЕ пропустишь в дайджесте</h3>
+                    <p>Дайджест гарантированно подсвечивает то, что в чате часто теряется:</p>
+                    <ul class="feature-list">
+                        <li><strong>🏆 Releases</strong> — новые версии XKeen/Xray (иначе можно месяц не замечать анонс)</li>
+                        <li><strong>⚠️ Cross-user конфликты</strong> — когда один юзер пишет «помогло», а другой «не работает» (в чате это выглядит как 2 обычных сообщения в разных ветках)</li>
+                        <li><strong>🔗 Решения из официальной документации</strong> — LLM #4 находит в README/FAQ то, что мимо чата вообще не проходило</li>
+                        <li><strong>📌 Советы дня</strong> — пользовательские находки (порты, генераторы, патчи), которые в чате разбросаны по разным дням</li>
+                        <li><strong>Топ-1 проблема дня</strong> (<code>highlight</code>) — выбирается по <code>msgCount</code>, не по времени публикации (без дайджеста новая проблема тонет в потоке)</li>
+                    </ul>
+
+                    <h3>Распределение расходов по этапам (средний прогон)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Этап</th><th>Доля токенов</th><th>Доля стоимости</th><th>Зачем он нужен</th></tr></thead>
+                            <tbody>
+                                <tr><td>LLM #1 — Извлечение</td><td>~15%</td><td>~$0.0025</td><td>Первичный отбор тем</td></tr>
+                                <tr><td>LLM #2 — Критик #1</td><td>~5%</td><td>~$0.0008</td><td>Валидация всего JSON</td></tr>
+                                <tr><td><strong>LLM #3 — Критик #2 per-topic</strong></td><td><strong>~60%</strong></td><td><strong>~$0.010</strong></td><td><strong>Глубокая проверка каждой темы</strong></td></tr>
+                                <tr><td>LLM #4 — Верификация по докам</td><td>~10%</td><td>~$0.0017</td><td>Сверка с README/FAQ</td></tr>
+                                <tr><td>LLM #5 — Финальный генератор</td><td>~10%</td><td>~$0.0017</td><td>HTML-текст для Telegram</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <strong>Per-topic Критик #2</strong> — самая дорогая часть (60% токенов), но именно он
+                        ловит cross-user конфликты и проверяет каждое решение по контексту.
+                        Без него LLM #1 мог бы выдать ложные ✅, и читатель бы их принял на веру.
+                    </p>
+                    <p>
+                        <strong>Модель:</strong> <code>deepseek/deepseek-v4-flash-20260423</code> через OpenRouter<br>
+                        <strong>Параметры:</strong> <code>temperature: 0</code>, <code>reasoning: { effort: "high" }</code><br>
+                        <strong>Fallback-цепочка:</strong> <code>GMI → DeepSeek</code> (исключая <code>Cloudflare</code>, <code>DeepInfra</code>)
+                    </p>
+                </section>
+            </div>
+
+            <!-- ===== GROUP: Выходы и формат ===== -->
+            <div class="docs-group">
+                <div class="docs-group-title">📤 Выходы и формат</div>
+
+                <section class="docs-section" id="tech-stack">
+                    <h2>Технический стек</h2>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Компонент</th><th>Технология</th></tr></thead>
+                            <tbody>
+                                <tr><td>Оркестрация</td><td>n8n (workflow editor)</td></tr>
+                                <tr><td>LLM-провайдер</td><td>OpenRouter</td></tr>
+                                <tr><td>Модели</td><td>DeepSeek V4 Flash</td></tr>
+                                <tr><td>Данные чата</td><td>Telegram GramPro API</td></tr>
+                                <tr><td>Документация</td><td>GitHub RAW (README + FAQ)</td></tr>
+                                <tr><td>Хранилище</td><td>PostgreSQL / Supabase</td></tr>
+                                <tr><td>Язык</td><td>JavaScript (n8n Code nodes)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="docs-section" id="diagnostic">
+                    <h2>Система диагностики</h2>
+                    <p>В футере каждого дайджеста выводится диагностический блок. Пример:</p>
+                    <pre><code>⚙️ Диагностика
 • Критик: OK, тем 8
 • Критик #2: применено 6, id-fallback 0, провалено 0
 • LLM-этапы: 5/5 ✅
 • Верификация: P ✅3/⚠️5, T ✅1/⚠️4
 • Валидатор: OK
 • Итог: всё штатно</code></pre>
-            <p>Возможные вердикты:</p>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0;">
-                <span class="status-badge green">✅ всё штатно</span>
-                <span class="status-badge yellow">⚠️ желательна беглая проверка</span>
-                <span class="status-badge red">⛔ нужна ручная проверка</span>
-            </div>
-        </section>
+                    <p>Возможные вердикты:</p>
+                    <div class="badge-row">
+                        <span class="status-badge green">✅ всё штатно</span>
+                        <span class="status-badge yellow">⚠️ желательна беглая проверка</span>
+                        <span class="status-badge red">⛔ нужна ручная проверка</span>
+                    </div>
+                </section>
 
-        <!-- Two-tier output -->
-        <section>
-            <h2>📤 Два канала публикации: модераторы и публичный канал</h2>
-            <p>
-                Один и тот же конвейер формирует <strong>два разных сообщения</strong>:
-                полное (с диагностикой) уходит модераторам, очищенное
-                (без диагностики, с хештегом <code>#digest</code>) — в публичный канал.
-            </p>
-            <div class="mermaid-legend">
-                <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>финальный LLM</span>
-                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка</span>
-                <span class="item"><span class="dot" style="background:#2d1414; border:1px solid #f85149;"></span>приватный канал</span>
-                <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>публичный канал</span>
-            </div>
-            <div class="mermaid-container">
+                <section class="docs-section" id="two-tier">
+                    <h2>📤 Два канала публикации: модераторы и публичный канал</h2>
+                    <p>
+                        Один и тот же конвейер формирует <strong>два разных сообщения</strong>:
+                        полное (с диагностикой) уходит модераторам, очищенное
+                        (без диагностики, с хештегом <code>#digest</code>) — в публичный канал.
+                    </p>
+                    <div class="mermaid-legend">
+                        <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>финальный LLM</span>
+                        <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка</span>
+                        <span class="item"><span class="dot" style="background:#2d1414; border:1px solid #f85149;"></span>приватный канал</span>
+                        <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>публичный канал</span>
+                    </div>
+                    <div class="mermaid-container">
 <pre class="mermaid">
 flowchart LR
     A["&lt;b&gt;LLM #5 Final&lt;/b&gt;&lt;br/&gt;HTML text"]
@@ -1671,297 +1453,192 @@ flowchart LR
     style D fill:#1f2937,stroke:#58a6ff,color:#e6edf3
     style E fill:#132f1a,stroke:#3fb950,color:#e6edf3
 </pre>
-            </div>
-            <p class="mermaid-caption">
-                <strong>Красный</strong> — приватная версия для модераторов (с диагностикой).
-                <strong>Зелёный</strong> — публичная версия для канала (без диагностики).
-                Один и тот же текст обрабатывается двумя разными путями после сборки.
-            </p>
-        </section>
+                    </div>
+                    <p class="mermaid-caption">
+                        <strong>Красный</strong> — приватная версия для модераторов (с диагностикой).
+                        <strong>Зелёный</strong> — публичная версия для канала (без диагностики).
+                        Один и тот же текст обрабатывается двумя разными путями после сборки.
+                    </p>
+                </section>
 
-        <!-- Statuses in digest -->
-        <section>
-            <h2>Статусы в дайджесте</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Значок</th>
-                            <th>Условие</th>
-                            <th>Значение</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>✅</td>
-                            <td><code>resolved=true</code> + solution есть</td>
-                            <td>Проблема решена, автор подтвердил</td>
-                        </tr>
-                        <tr>
-                            <td>⚠️ предложено</td>
-                            <td><code>resolved=false</code> + solution есть / officialNote есть</td>
-                            <td>Решение предложено, но автор не подтвердил</td>
-                        </tr>
-                        <tr>
-                            <td>⛔ не решено</td>
-                            <td>Нет ни решения, ни officialNote</td>
-                            <td>Проблема открыта</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                <section class="docs-section" id="statuses">
+                    <h2>Статусы в дайджесте</h2>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Значок</th><th>Условие</th><th>Значение</th></tr></thead>
+                            <tbody>
+                                <tr><td>✅</td><td><code>resolved=true</code> + solution есть</td><td>Проблема решена, автор подтвердил</td></tr>
+                                <tr><td>⚠️ предложено</td><td><code>resolved=false</code> + solution есть / officialNote есть</td><td>Решение предложено, но автор не подтвердил</td></tr>
+                                <tr><td>⛔ не решено</td><td>Нет ни решения, ни officialNote</td><td>Проблема открыта</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-        <!-- Digest structure -->
-        <section>
-            <h2>📐 Структура дайджеста: 4 секции, точные правила</h2>
-            <p>
-                Дайджест всегда собирается в одном и том же порядке. Секции могут
-                отсутствовать, если соответствующий массив пустой — это не ошибка,
-                а явное правило рендеринга.
-            </p>
+                <section class="docs-section" id="digest-structure">
+                    <h2>📐 Структура дайджеста: 4 секции, точные правила</h2>
+                    <p>
+                        Дайджест всегда собирается в одном и том же порядке. Секции могут
+                        отсутствовать, если соответствующий массив пустой — это не ошибка,
+                        а явное правило рендеринга.
+                    </p>
 
-            <h3>Порядок и условия появления секций</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Секция</th>
-                            <th>Эмодзи</th>
-                            <th>Условие появления</th>
-                            <th>Источник данных</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Самое обсуждаемое за день</td>
-                            <td>🏆</td>
-                            <td><code>problems.length &gt; 0</code></td>
-                            <td><code>highlight</code> — вытаскивается из <code>problems[]</code> после сортировки по <code>msgCount</code></td>
-                        </tr>
-                        <tr>
-                            <td>Новости и релизы</td>
-                            <td>📣</td>
-                            <td><code>releases.length &gt; 0</code></td>
-                            <td>Массив <code>releases[]</code> целиком</td>
-                        </tr>
-                        <tr>
-                            <td>Проблемы и решения</td>
-                            <td>⚠️</td>
-                            <td><code>problems.length &gt; 0</code> (остаток после highlight)</td>
-                            <td><code>problems[]</code> после удаления highlight, отсортированы по <code>msgCount</code> (убыв.)</td>
-                        </tr>
-                        <tr>
-                            <td>Советы дня</td>
-                            <td>📌</td>
-                            <td><code>tips.length &gt; 0</code></td>
-                            <td>Массив <code>tips[]</code> целиком (до 5 шт.)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                    <h3>Порядок и условия появления секций</h3>
+                    <div class="table-wrapper">
+                        <table class="table-code">
+                            <thead><tr><th>Секция</th><th>Эмодзи</th><th>Условие появления</th><th>Источник данных</th></tr></thead>
+                            <tbody>
+                                <tr><td>Самое обсуждаемое за день</td><td>🏆</td><td><code>problems.length &gt; 0</code></td><td><code>highlight</code> — вытаскивается из <code>problems[]</code> после сортировки по <code>msgCount</code></td></tr>
+                                <tr><td>Новости и релизы</td><td>📣</td><td><code>releases.length &gt; 0</code></td><td>Массив <code>releases[]</code> целиком</td></tr>
+                                <tr><td>Проблемы и решения</td><td>⚠️</td><td><code>problems.length &gt; 0</code> (остаток после highlight)</td><td><code>problems[]</code> после удаления highlight, отсортированы по <code>msgCount</code> (убыв.)</td></tr>
+                                <tr><td>Советы дня</td><td>📌</td><td><code>tips.length &gt; 0</code></td><td>Массив <code>tips[]</code> целиком (до 5 шт.)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-            <h3>Как формируется highlight</h3>
-            <p>
-                <code>highlight</code> — это <strong>самая обсуждаемая проблема дня</strong>:
-                берётся первый элемент из <code>problems[]</code> после сортировки по
-                <code>msgCount</code> (по убыванию) и удаляется из основного массива
-                через <code>shift()</code>. Это аппаратная логика в ноде «Подготовить
-                финальный запрос» — финальный LLM <strong>не выбирает</strong> highlight сам.
-            </p>
-            <pre><code>verifiedTopics.problems.sort((a, b) =&gt; Number(b.msgCount) - Number(a.msgCount));
+                    <h3>Как формируется highlight</h3>
+                    <p>
+                        <code>highlight</code> — это <strong>самая обсуждаемая проблема дня</strong>:
+                        берётся первый элемент из <code>problems[]</code> после сортировки по
+                        <code>msgCount</code> (по убыванию) и удаляется из основного массива
+                        через <code>shift()</code>. Это аппаратная логика в ноде «Подготовить
+                        финальный запрос» — финальный LLM <strong>не выбирает</strong> highlight сам.
+                    </p>
+                    <pre><code>verifiedTopics.problems.sort((a, b) =&gt; Number(b.msgCount) - Number(a.msgCount));
 highlight = verifiedTopics.problems.shift();
 verifiedTopics.highlight = highlight;</code></pre>
 
-            <h3>Полная логика статусов (6 комбинаций)</h3>
-            <p>
-                Каждый пункт в дайджесте получает один из 3 значков в зависимости от
-                комбинации трёх полей. Полная спецификация:
-            </p>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Значок</th>
-                            <th>resolved</th>
-                            <th>solution</th>
-                            <th>officialNote</th>
-                            <th>Что в тексте</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>✅</td>
-                            <td><code>true</code></td>
-                            <td>не пустое</td>
-                            <td>любое</td>
-                            <td><i>Решение: {solution}</i> [✅]</td>
-                        </tr>
-                        <tr>
-                            <td>✅</td>
-                            <td><code>true</code></td>
-                            <td>пустое</td>
-                            <td>не пустое</td>
-                            <td><i>Решение из документации: {officialNote}</i> [✅]</td>
-                        </tr>
-                        <tr>
-                            <td>⚠️ предложено</td>
-                            <td><code>false</code></td>
-                            <td>не пустое</td>
-                            <td>любое</td>
-                            <td><i>Предложено: {solution}</i> [⚠️ предложено]</td>
-                        </tr>
-                        <tr>
-                            <td>⚠️ предложено</td>
-                            <td><code>false</code></td>
-                            <td>пустое</td>
-                            <td>не пустое</td>
-                            <td><i>Решение из документации: {officialNote}</i> [⚠️ предложено]</td>
-                        </tr>
-                        <tr>
-                            <td>⚠️ предложено (конфликт)</td>
-                            <td><code>false</code></td>
-                            <td>содержит «расходятся»</td>
-                            <td><code>null</code></td>
-                            <td><i>{solution}</i> с маркером «результаты у пользователей расходятся» [⚠️ предложено]</td>
-                        </tr>
-                        <tr>
-                            <td>⛔ не решено</td>
-                            <td><code>false</code></td>
-                            <td>пустое</td>
-                            <td>пустое</td>
-                            <td><i>Не решено</i> [⛔ не решено]</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                    <h3>Полная логика статусов (6 комбинаций)</h3>
+                    <p>
+                        Каждый пункт в дайджесте получает один из 3 значков в зависимости от
+                        комбинации трёх полей. Полная спецификация:
+                    </p>
+                    <div class="table-wrapper">
+                        <table class="table-code">
+                            <thead><tr><th>Значок</th><th>resolved</th><th>solution</th><th>officialNote</th><th>Что в тексте</th></tr></thead>
+                            <tbody>
+                                <tr><td>✅</td><td><code>true</code></td><td>не пустое</td><td>любое</td><td><i>Решение: {solution}</i> [✅]</td></tr>
+                                <tr><td>✅</td><td><code>true</code></td><td>пустое</td><td>не пустое</td><td><i>Решение из документации: {officialNote}</i> [✅]</td></tr>
+                                <tr><td>⚠️ предложено</td><td><code>false</code></td><td>не пустое</td><td>любое</td><td><i>Предложено: {solution}</i> [⚠️ предложено]</td></tr>
+                                <tr><td>⚠️ предложено</td><td><code>false</code></td><td>пустое</td><td>не пустое</td><td><i>Решение из документации: {officialNote}</i> [⚠️ предложено]</td></tr>
+                                <tr><td>⚠️ предложено (конфликт)</td><td><code>false</code></td><td>содержит «расходятся»</td><td><code>null</code></td><td><i>{solution}</i> с маркером «результаты у пользователей расходятся» [⚠️ предложено]</td></tr>
+                                <tr><td>⛔ не решено</td><td><code>false</code></td><td>пустое</td><td>пустое</td><td><i>Не решено</i> [⛔ не решено]</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-            <h3>Формат одной записи</h3>
-            <p>Каждый пункт в секциях рендерится по жёсткому шаблону:</p>
-            <pre><code>• &lt;b&gt;{title}&lt;/b&gt; [id:{messageId}] — {summary}
+                    <h3>Формат одной записи</h3>
+                    <p>Каждый пункт в секциях рендерится по жёсткому шаблону:</p>
+                    <pre><code>• &lt;b&gt;{title}&lt;/b&gt; [id:{messageId}] — {summary}
   {Статус}: {text решения} [{значок}]</code></pre>
-            <p style="font-size: 13px;">
-                <strong>Гарантии:</strong> у каждой записи <strong>обязательно</strong> есть
-                <code>[id:{messageId}]</code> — это ссылка на реальное сообщение в чате.
-                Если <code>id</code> нет — тема пропускается целиком, а не выводится
-                с пустой ссылкой. Именно так обеспечивается «без выдумок».
-            </p>
+                    <p>
+                        <strong>Гарантии:</strong> у каждой записи <strong>обязательно</strong> есть
+                        <code>[id:{messageId}]</code> — это ссылка на реальное сообщение в чате.
+                        Если <code>id</code> нет — тема пропускается целиком, а не выводится
+                        с пустой ссылкой. Именно так обеспечивается «без выдумок».
+                    </p>
 
-            <h3>Разбиение длинного дайджеста на части</h3>
-            <p>
-                Telegram ограничивает длину одного сообщения (≈4096 символов),
-                поэтому длинные дайджесты автоматически делятся на части:
-            </p>
-            <ul class="feature-list">
-                <li>
-                    <strong>MAX_LEN = 3500 символов</strong> на часть (с overhead
-                    на header/footer ~100 символов)
-                </li>
-                <li>
-                    <strong>Граница разбиения</strong> — между темами (по маркеру
-                    <code>• &lt;b&gt;</code>), тема <strong>никогда</strong> не разрезается пополам
-                </li>
-                <li>
-                    <strong>Header (только в первой части):</strong>
-                    <code>📋 Дайджест за {date}</code> +
-                    <code>📨 Сообщений обработано: {N}</code>
-                </li>
-                <li>
-                    <strong>Continuation header (в остальных):</strong>
-                    <code>📋 Дайджест за {date} (продолжение)</code>
-                </li>
-                <li>
-                    <strong>Footer (только в последней части):</strong> модель +
-                    токены + стоимость + блок диагностики ⚙️
-                </li>
-                <li>
-                    <strong>Метка части:</strong> <code>Часть N из M</code> добавляется
-                    только если M &gt; 1
-                </li>
-            </ul>
-        </section>
+                    <h3>Разбиение длинного дайджеста на части</h3>
+                    <p>
+                        Telegram ограничивает длину одного сообщения (≈4096 символов),
+                        поэтому длинные дайджесты автоматически делятся на части:
+                    </p>
+                    <ul class="feature-list">
+                        <li><strong>MAX_LEN = 3500 символов</strong> на часть (с overhead на header/footer ~100 символов)</li>
+                        <li><strong>Граница разбиения</strong> — между темами (по маркеру <code>• &lt;b&gt;</code>), тема <strong>никогда</strong> не разрезается пополам</li>
+                        <li><strong>Header (только в первой части):</strong> <code>📋 Дайджест за {date}</code> + <code>📨 Сообщений обработано: {N}</code></li>
+                        <li><strong>Continuation header (в остальных):</strong> <code>📋 Дайджест за {date} (продолжение)</code></li>
+                        <li><strong>Footer (только в последней части):</strong> модель + токены + стоимость + блок диагностики ⚙️</li>
+                        <li><strong>Метка части:</strong> <code>Часть N из M</code> добавляется только если M &gt; 1</li>
+                    </ul>
+                </section>
 
-        <!-- Annotated example -->
-        <section>
-            <h2>📋 Пример с подсветкой: реальный дайджест со всеми блоками</h2>
-            <p>
-                Дайджест за <strong>3 июля 2026 года</strong> — редкий кейс, в котором
-                собраны <strong>все 4 секции</strong> сразу (🏆 / 📣 / ⚠️ / 📌),
-                встречаются <strong>все 3 статуса</strong> (✅ / ⚠️ / ⛔),
-                есть <strong>блок диагностики</strong> ⚙️ и дайджест был <strong>разбит на 2 части</strong>
-                (превысил 3500 символов). Цветовая подсветка показывает,
-                какой элемент к какой секции и статусу относится.
-            </p>
-            <p style="font-size: 13px; color: var(--text-secondary);">
-                Ниже — <strong>приватная версия для модераторов</strong> (с диагностикой).
-                Публичная версия для канала — та же, но без блока ⚙️ и без служебного
-                footer'а (модель, токены, стоимость); в конце добавлен <code>#digest</code> + автор.
-            </p>
+                <section class="docs-section" id="annotated-example">
+                    <h2>📋 Пример с подсветкой: реальный дайджест со всеми блоками</h2>
+                    <p>
+                        Дайджест за <strong>3 июля 2026 года</strong> — редкий кейс, в котором
+                        собраны <strong>все 4 секции</strong> сразу (🏆 / 📣 / ⚠️ / 📌),
+                        встречаются <strong>все 3 статуса</strong> (✅ / ⚠️ / ⛔),
+                        есть <strong>блок диагностики</strong> ⚙️ и дайджест был <strong>разбит на 2 части</strong>
+                        (превысил 3500 символов). Цветовая подсветка показывает,
+                        какой элемент к какой секции и статусу относится.
+                    </p>
+                    <p>
+                        Ниже — <strong>приватная версия для модераторов</strong> (с диагностикой).
+                        Публичная версия для канала — та же, но без блока ⚙️ и без служебного
+                        footer'а (модель, токены, стоимость); в конце добавлен <code>#digest</code> + автор.
+                    </p>
 
-            <h3>Цветовая легенда</h3>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; font-size: 13px;">
-                <span style="background: #2d2410; padding: 3px 10px; border-radius: 4px; color: #d29922;">🏆 highlight</span>
-                <span style="background: #1c2128; padding: 3px 10px; border-radius: 4px; color: #bc8cff;">📣 releases</span>
-                <span style="background: #2d2410; padding: 3px 10px; border-radius: 4px; color: #d29922;">⚠️ problems</span>
-                <span style="background: #1f2937; padding: 3px 10px; border-radius: 4px; color: #58a6ff;">📌 tips</span>
-                <span style="background: #132f1a; padding: 3px 10px; border-radius: 4px; color: #3fb950;">✅ resolved</span>
-                <span style="background: #2d2410; padding: 3px 10px; border-radius: 4px; color: #d29922;">⚠️ предложено</span>
-                <span style="background: #2d1414; padding: 3px 10px; border-radius: 4px; color: #f85149;">⛔ не решено</span>
-                <span style="background: #161b22; padding: 3px 10px; border-radius: 4px; color: #8b949e;">⚙️ диагностика</span>
-            </div>
+                    <h3>Цветовая легенда</h3>
+                    <div class="color-legend">
+                        <span class="legend-chip" style="background:#2d2410;color:#d29922;">🏆 highlight</span>
+                        <span class="legend-chip" style="background:#1c2128;color:#bc8cff;">📣 releases</span>
+                        <span class="legend-chip" style="background:#2d2410;color:#d29922;">⚠️ problems</span>
+                        <span class="legend-chip" style="background:#1f2937;color:#58a6ff;">📌 tips</span>
+                        <span class="legend-chip" style="background:#132f1a;color:#3fb950;">✅ resolved</span>
+                        <span class="legend-chip" style="background:#2d2410;color:#d29922;">⚠️ предложено</span>
+                        <span class="legend-chip" style="background:#2d1414;color:#f85149;">⛔ не решено</span>
+                        <span class="legend-chip" style="background:#161b22;color:#8b949e;">⚙️ диагностика</span>
+                    </div>
 
-            <h3>Часть 1 из 2 — модераторская версия</h3>
-            <pre><code><span style="color: #8b949e;">[04.07.2026 0:24] Dmbot:</span> 📋 <b>Дайджест чата за 3 июля 2026 г.</b>
+                    <details>
+                        <summary>Часть 1 из 2 — модераторская версия</summary>
+                        <div class="details-content">
+                            <pre><code><span style="color:#8b949e;">[04.07.2026 0:24] Dmbot:</span> 📋 <b>Дайджест чата за 3 июля 2026 г.</b>
 📨 Сообщений обработано: <code>204</code>
 ─────────────────────
 
-<span style="background: #2d2410; color: #d29922;"><b>🏆 Самое обсуждаемое за день</b></span>
+<span style="background:#2d2410;color:#d29922;"><b>🏆 Самое обсуждаемое за день</b></span>
 
-• <b>Капча Яндекса при отправке всего трафика в туннель</b> <span style="color: #58a6ff;">🔗</span> — Пользователь ищет способ победить капчу Яндекса при проксировании всего трафика. Модератор предложил установить GeoIPSET (xkeen -gips). Автор подтвердил: «ЗАРАБОТАЛО!!!! Спасибо!!!!».
-  <span style="background: #132f1a; color: #3fb950;">Решение: xkeen -gips [✅]</span>
+• <b>Капча Яндекса при отправке всего трафика в туннель</b> <span style="color:#58a6ff;">🔗</span> — Пользователь ищет способ победить капчу Яндекса при проксировании всего трафика. Модератор предложил установить GeoIPSET (xkeen -gips). Автор подтвердил: «ЗАРАБОТАЛО!!!! Спасибо!!!!».
+  <span style="background:#132f1a;color:#3fb950;">Решение: xkeen -gips [✅]</span>
 
-<span style="background: #1c2128; color: #bc8cff;"><b>📣 Новости и релизы</b></span>
+<span style="background:#1c2128;color:#bc8cff;"><b>📣 Новости и релизы</b></span>
 
-• <b>XKeen 2.0.1 Beta — новая политика xkeenfull</b> <span style="color: #58a6ff;">🔗</span> — Добавлена политика принудительного проксирования xkeenfull для устройств на всех портах, игнорирующая правила маршрутизации и исключения IPSET основного профиля.
+• <b>XKeen 2.0.1 Beta — новая политика xkeenfull</b> <span style="color:#58a6ff;">🔗</span> — Добавлена политика принудительного проксирования xkeenfull для устройств на всех портах, игнорирующая правила маршрутизации и исключения IPSET основного профиля.
 
-• <b>XKeen 2.0.1 Beta — переименование тегов force-proxy</b> <span style="color: #58a6ff;">🔗</span> — Теги dscp-force-proxy переименованы в force-proxy, force-proxy-tproxy, force-proxy-redirect. При обновлении через xkeen -uk сохраняются старые имена, при чистой установке — новые.
+• <b>XKeen 2.0.1 Beta — переименование тегов force-proxy</b> <span style="color:#58a6ff;">🔗</span> — Теги dscp-force-proxy переименованы в force-proxy, force-proxy-tproxy, force-proxy-redirect. При обновлении через xkeen -uk сохраняются старые имена, при чистой установке — новые.
 
-<span style="background: #2d2410; color: #d29922;"><b>⚠️ Проблемы и решения</b></span>
+<span style="background:#2d2410;color:#d29922;"><b>⚠️ Проблемы и решения</b></span>
 
-• <b>Недостаточно места для установки Xray после обновления XKeen</b> <span style="color: #58a6ff;">🔗</span> — После обновления XKeen не хватает места для установки Xray (требуется 40 MB, доступно 36 MB). Модератор предложил удалить бинарник и установить сжатый. Пользователь не подтвердил решение.
-  <span style="background: #2d2410; color: #d29922;">Решение из документации: В документации указано, что установка во внутреннюю память возможна, но требует опыта и не гарантируется; рекомендуется внешний USB-накопитель. [⚠️ предложено]</span>
+• <b>Недостаточно места для установки Xray после обновления XKeen</b> <span style="color:#58a6ff;">🔗</span> — После обновления XKeen не хватает места для установки Xray (требуется 40 MB, доступно 36 MB). Модератор предложил удалить бинарник и установить сжатый. Пользователь не подтвердил решение.
+  <span style="background:#2d2410;color:#d29922;">Решение из документации: В документации указано, что установка во внутреннюю память возможна, но требует опыта и не гарантируется; рекомендуется внешний USB-накопитель. [⚠️ предложено]</span>
 
-• <b>2gis не загружает тайлы карты на Xkeen с Mihomo</b> <span style="color: #58a6ff;">🔗</span> — Пользователь сообщил, что 2gis не загружает тайлы карты на Xkeen 2 с Mihomo. Пробовал разные конфигурации, добавление правил DIRECT — безрезультатно.
-  <span style="background: #2d1414; color: #f85149;">Не решено [⛔ не решено]</span>
+• <b>2gis не загружает тайлы карты на Xkeen с Mihomo</b> <span style="color:#58a6ff;">🔗</span> — Пользователь сообщил, что 2gis не загружает тайлы карты на Xkeen 2 с Mihomo. Пробовал разные конфигурации, добавление правил DIRECT — безрезультатно.
+  <span style="background:#2d1414;color:#f85149;">Не решено [⛔ не решено]</span>
 
-• <b>Рандомные тормоза на Hopper 3811 с Xray</b> <span style="color: #58a6ff;">🔗</span> — На Hopper 3811 (Ростелеком) периодически всё начинает тормозить, помогает перезапуск xkeen. Проверяли торренты, конфиг, предполагают петлю трафика. Решение не найдено.
-  <span style="background: #2d1414; color: #f85149;">Не решено [⛔ не решено]</span>
+• <b>Рандомные тормоза на Hopper 3811 с Xray</b> <span style="color:#58a6ff;">🔗</span> — На Hopper 3811 (Ростелеком) периодически всё начинает тормозить, помогает перезапуск xkeen. Проверяли торренты, конфиг, предполагают петлю трафика. Решение не найдено.
+  <span style="background:#2d1414;color:#f85149;">Не решено [⛔ не решено]</span>
 
-• <b>Попытка использовать amnezia-xray-core на роутере вместо Mihomo</b> <span style="color: #58a6ff;">🔗</span> — Пользователь хочет заменить Mihomo на форк amnezia-xray-core из-за высокой нагрузки на CPU. Обсуждается сборка бинарника под MIPS, совместимость конфигов.
-  <span style="background: #2d1414; color: #f85149;">Не решено [⛔ не решено]</span>
+• <b>Попытка использовать amnezia-xray-core на роутере вместо Mihomo</b> <span style="color:#58a6ff;">🔗</span> — Пользователь хочет заменить Mihomo на форк amnezia-xray-core из-за высокой нагрузки на CPU. Обсуждается сборка бинарника под MIPS, совместимость конфигов.
+  <span style="background:#2d1414;color:#f85149;">Не решено [⛔ не решено]</span>
 
-• <b>Роутер открывает 2к+ соединений к VPS, всё падает</b> <span style="color: #58a6ff;">🔗</span> — После настройки XKeен роутер открывает ~2000 соединений к VPS, и всё перестаёт работать. Обсуждаются причины: adlist, кривые лаунчеры. Пользователь решил переустановкой с нуля (самостоятельно).
-  <span style="background: #132f1a; color: #3fb950;">Решение: Переустановка XKeен с нуля и настройка роутинга с использованием конфига из чата [✅]</span>
+• <b>Роутер открывает 2к+ соединений к VPS, всё падает</b> <span style="color:#58a6ff;">🔗</span> — После настройки XKeен роутер открывает ~2000 соединений к VPS, и всё перестаёт работать. Обсуждаются причины: adlist, кривые лаунчеры. Пользователь решил переустановкой с нуля (самостоятельно).
+  <span style="background:#132f1a;color:#3fb950;">Решение: Переустановка XKeен с нуля и настройка роутинга с использованием конфига из чата [✅]</span>
 
-• <b>Браузеры на ПК игнорируют маршрутизацию Xkeen с Mihomo</b> <span style="color: #58a6ff;">🔗</span> — На Keenetic с Xkeen и Mihomo маршрутизация работает на мобильных, но на ПК браузеры используют свой DNS. Отключение безопасного DNS в Chrome не помогло.
-  <span style="background: #2d1414; color: #f85149;">Не решено [⛔ не решено]</span>
+• <b>Браузеры на ПК игнорируют маршрутизацию Xkeen с Mihomo</b> <span style="color:#58a6ff;">🔗</span> — На Keenetic с Xkeen и Mihomo маршрутизация работает на мобильных, но на ПК браузеры используют свой DNS. Отключение безопасного DNS в Chrome не помогло.
+  <span style="background:#2d1414;color:#f85149;">Не решено [⛔ не решено]</span>
 
-<span style="background: #1f2937; color: #58a6ff;"><b>📌 Советы дня</b></span>
+<span style="background:#1f2937;color:#58a6ff;"><b>📌 Советы дня</b></span>
 
-<span style="color: #8b949e;"><i>Часть 1 из 2</i></span></code></pre>
+<span style="color:#8b949e;"><i>Часть 1 из 2</i></span></code></pre>
+                        </div>
+                    </details>
 
-            <h3>Часть 2 из 2 — продолжение + диагностика</h3>
-            <pre><code><span style="color: #8b949e;">[04.07.2026 0:24] Dmbot:</span> 📋 <b>Дайджест за 3 июля 2026 г. (продолжение)</b>
+                    <details>
+                        <summary>Часть 2 из 2 — продолжение + диагностика</summary>
+                        <div class="details-content">
+                            <pre><code><span style="color:#8b949e;">[04.07.2026 0:24] Dmbot:</span> 📋 <b>Дайджест за 3 июля 2026 г. (продолжение)</b>
 ─────────────────────
 
-• <b>Рекомендованные порты для игр и мессенджеров</b> <span style="color: #58a6ff;">🔗</span> — Список портов для Discord, Telegram, WhatsApp для настройки проброса через XKeen. <span style="background: #2d2410; color: #d29922;">[⚠️ не в доках]</span>
+• <b>Рекомендованные порты для игр и мессенджеров</b> <span style="color:#58a6ff;">🔗</span> — Список портов для Discord, Telegram, WhatsApp для настройки проброса через XKeen. <span style="background:#2d2410;color:#d29922;">[⚠️ не в доках]</span>
 
-• <b>Настройка исходящего подключения WARP на VPS</b> <span style="color: #58a6ff;">🔗</span> — Инструкция: создать в исходящих подключениях тип WARP, заполнить поля, бесплатные ключи искать на Reddit, чтобы VPS отдавала IP Cloudflare вместо своего. <span style="background: #2d2410; color: #d29922;">[⚠️ не в доках]</span>
+• <b>Настройка исходящего подключения WARP на VPS</b> <span style="color:#58a6ff;">🔗</span> — Инструкция: создать в исходящих подключениях тип WARP, заполнить поля, бесплатные ключи искать на Reddit, чтобы VPS отдавала IP Cloudflare вместо своего. <span style="background:#2d2410;color:#d29922;">[⚠️ не в доках]</span>
 ─────────────────────
 🤖 Модель: <code>deepseek/deepseek-v4-flash-20260423</code>
 📊 Токены: <code>110492</code> in / <code>25422</code> out / <code>135914</code> total
 💵 Стоимость: <code>$0.01555</code>
-<span style="background: #161b22; color: #8b949e;">⚙️ <b>Диагностика</b>
+<span style="background:#161b22;color:#8b949e;">⚙️ <b>Диагностика</b>
 • Критик: удалено 1, тем 11
 • Критик #2: применено 9, id-fallback 0, провалено 0
 • Верификация: P ✅0/⚠️7, T ✅0/⚠️2, official 1
@@ -1971,7 +1648,7 @@ verifiedTopics.highlight = highlight;</code></pre>
 
 Валидатор: Авто-исправлено: Markdown italic →
 
-<span style="color: #8b949e;">Что это значит
+<span style="color:#8b949e;">Что это значит
 • Критик — не потерял ли темы и не был ли fallback
 • Критик #2 — сколько тем проверено per-topic
 • LLM-этапы — статус каждого из 5 вызовов модели
@@ -1980,145 +1657,63 @@ verifiedTopics.highlight = highlight;</code></pre>
 • Итог — нужно ли проверять дайджест вручную
 Сгенерировано автоматически</span>
 
-<span style="color: #8b949e;"><i>Часть 2 из 2</i></span></code></pre>
+<span style="color:#8b949e;"><i>Часть 2 из 2</i></span></code></pre>
+                        </div>
+                    </details>
 
-            <h3>На что обратить внимание в этом примере</h3>
-            <ul class="feature-list">
-                <li>
-                    <strong>🏆 Highlight выбирается автоматически, а не LLM</strong>
-                    «Капча Яндекса» стала highlight, потому что имела наибольший
-                    <code>msgCount</code> среди проблем. Логика — <code>sort(msgCount desc) → shift</code> —
-                    отрабатывает аппаратно в ноде «Подготовить финальный запрос», финальный LLM
-                    не выбирает её сам.
-                </li>
-                <li>
-                    <strong>✅ Только при явном подтверждении от автора</strong>
-                    В этом дайджесте два ✅: капча Яндекса («ЗАРАБОТАЛО!!!!» от автора)
-                    и роутер с 2к соединений (пользователь сам решил переустановкой).
-                    Модератор без подтверждения автора НЕ даёт ✅ — это правило из Critic #2.
-                </li>
-                <li>
-                    <strong>⚠️ предложено = решение из документации, но автор не подтвердил</strong>
-                    «Недостаточно места» — <code>solution == null</code>, но <code>officialNote != null</code>
-                    (LLM #4 нашёл в README инфу про USB-накопитель). По правилам —
-                    <code>resolved: false</code> и <code>verified: false</code>, статус
-                    «предложено», а не «решено».
-                </li>
-                <li>
-                    <strong>⛔ не решено — самая частая ситуация</strong>
-                    В этом дайджесте 4 из 6 проблем в problems[] — без решения
-                    и без officialNote. Это нормальное распределение для активного
-                    чата поддержки: большинство проблем в работе.
-                </li>
-                <li>
-                    <strong>📣 Releases — только официальные анонсы</strong>
-                    Оба релиза — про <code>XKeen 2.0.1 Beta</code>, явно от автора
-                    проекта (jameszero). LLM #1 не пропустил бы в releases[]
-                    обычное упоминание «обновился до 2.0.1» от пользователя.
-                </li>
-                <li>
-                    <strong>📌 Tips: статус по документации, не по подтверждению</strong>
-                    У обоих tips — <code>[⚠️ не в доках]</code>: они полезны,
-                    но не подтверждаются README/FAQ XKeen. Если бы такой совет
-                    был в FAQ — статус стал бы <code>[✅]</code>.
-                </li>
-                <li>
-                    <strong>📏 Разбиение на 2 части</strong>
-                    Дайджест превысил 3500 символов (8 проблем + 2 релиза + 1 highlight).
-                    Header с датой — только в части 1, в части 2 — continuation
-                    header с пометкой «(продолжение)». Метка «Часть N из M» —
-                    только в многокомпонентных дайджестах.
-                </li>
-                <li>
-                    <strong>📌 Советы дня: известная особенность</strong>
-                    Заголовок «📌 Советы дня» попал в часть 1, а сами tips —
-                    в часть 2. Валидатор сейчас убирает только пустые «Новости и релизы»,
-                    но не «Советы дня» в аналогичной ситуации. Это видно
-                    в реальном выводе и не считается ошибкой, но если будет
-                    мешать — можно добавить правило в валидатор.
-                </li>
-                <li>
-                    <strong>⚙️ Диагностика: что видно модератору</strong>
-                    «Критик: удалено 1, тем 11» — Critic #1 отбросил 1 слабую
-                    тему. «Верификация: P ✅0/⚠️7» — ни одно из 7 решений проблем
-                    не подтвердилось документацией напрямую. «Валидатор:
-                    автоисправлений 1» — LLM вставил <code>*italic*</code> вместо
-                    <code>&lt;i&gt;</code>, валидатор это поправил.
-                    «Итог: всё штатно» — модератору можно не вчитываться.
-                </li>
-                <li>
-                    <strong>💵 Стоимость: $0.01555</strong>
-                    Типичный прогон для дня с большим потоком (204 сообщения, 12 тем).
-                    Основная доля — у Critic #2 per-topic (~60% токенов, 9 вызовов).
-                </li>
-            </ul>
-        </section>
-
-        <!-- Config reference -->
-        <section>
-            <h2>🛠️ Config reference: что и где менять</h2>
-            <p>
-                Все настройки сосредоточены в ноде <code>Config</code> 
-                (JS-код в workflow). При переносе на другой чат нужно править:
-            </p>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Где</th>
-                            <th>Что менять</th>
-                            <th>Когда</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>Config.MODERATOR_IDS</code></td>
-                            <td>Словарь <code>telegram_user_id → name</code> (для метки [MOD] и отнесения тем к releases)</td>
-                            <td>Смена модераторов чата</td>
-                        </tr>
-                        <tr>
-                            <td><code>Config.LLM_PROVIDER.order</code></td>
-                            <td>Массив провайдеров по приоритету (fallback'и включены)</td>
-                            <td>Если основной провайдер недоступен</td>
-                        </tr>
-                        <tr>
-                            <td><code>Config.LLM_PROVIDER.ignore</code></td>
-                            <td>Провайдеры, которых нужно исключить (например <code>Cloudflare</code>, <code>DeepInfra</code>)</td>
-                            <td>Стабильно плохое качество от конкретного провайдера</td>
-                        </tr>
-                        <tr>
-                            <td><code>Get chat history.chatId</code> + <code>Send message1.chatId</code></td>
-                            <td>ID основного чата (источник и публичный канал)</td>
-                            <td>Перенос на другой чат</td>
-                        </tr>
-                        <tr>
-                            <td><code>Send message.chatId</code></td>
-                            <td>ID приватного чата модераторов</td>
-                            <td>Перенос на другой чат</td>
-                        </tr>
-                        <tr>
-                            <td><code>Fetch README.url</code> + <code>Fetch FAQ.url</code></td>
-                            <td>URL'ы GitHub RAW для документации</td>
-                            <td>Смена проекта / репозитория</td>
-                        </tr>
-                        <tr>
-                            <td>Системные промпты (<code>Построить запрос тем</code>, <code>Подготовить запрос критика</code> и т.д.)</td>
-                            <td>Tier-правила, anchor-паттерны, имена модераторов в промпте критика</td>
-                            <td>Смена тематики чата (другой домен, не XKeen)</td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <details>
+                        <summary>На что обратить внимание в этом примере (10 пунктов)</summary>
+                        <div class="details-content">
+                            <ul class="feature-list">
+                                <li><strong>🏆 Highlight выбирается автоматически, а не LLM</strong>«Капча Яндекса» стала highlight, потому что имела наибольший <code>msgCount</code> среди проблем. Логика — <code>sort(msgCount desc) → shift</code> — отрабатывает аппаратно в ноде «Подготовить финальный запрос», финальный LLM не выбирает её сам.</li>
+                                <li><strong>✅ Только при явном подтверждении от автора</strong>В этом дайджесте два ✅: капча Яндекса («ЗАРАБОТАЛО!!!!» от автора) и роутер с 2к соединений (пользователь сам решил переустановкой). Модератор без подтверждения автора НЕ даёт ✅ — это правило из Critic #2.</li>
+                                <li><strong>⚠️ предложено = решение из документации, но автор не подтвердил</strong>«Недостаточно места» — <code>solution == null</code>, но <code>officialNote != null</code> (LLM #4 нашёл в README инфу про USB-накопитель). По правилам — <code>resolved: false</code> и <code>verified: false</code>, статус «предложено», а не «решено».</li>
+                                <li><strong>⛔ не решено — самая частая ситуация</strong>В этом дайджесте 4 из 6 проблем в problems[] — без решения и без officialNote. Это нормальное распределение для активного чата поддержки: большинство проблем в работе.</li>
+                                <li><strong>📣 Releases — только официальные анонсы</strong>Оба релиза — про <code>XKeen 2.0.1 Beta</code>, явно от автора проекта (jameszero). LLM #1 не пропустил бы в releases[] обычное упоминание «обновился до 2.0.1» от пользователя.</li>
+                                <li><strong>📌 Tips: статус по документации, не по подтверждению</strong>У обоих tips — <code>[⚠️ не в доках]</code>: они полезны, но не подтверждаются README/FAQ XKeen. Если бы такой совет был в FAQ — статус стал бы <code>[✅]</code>.</li>
+                                <li><strong>📏 Разбиение на 2 части</strong>Дайджест превысил 3500 символов (8 проблем + 2 релиза + 1 highlight). Header с датой — только в части 1, в части 2 — continuation header с пометкой «(продолжение)». Метка «Часть N из M» — только в многокомпонентных дайджестах.</li>
+                                <li><strong>📌 Советы дня: известная особенность</strong>Заголовок «📌 Советы дня» попал в часть 1, а сами tips — в часть 2. Валидатор сейчас убирает только пустые «Новости и релизы», но не «Советы дня» в аналогичной ситуации. Это видно в реальном выводе и не считается ошибкой, но если будет мешать — можно добавить правило в валидатор.</li>
+                                <li><strong>⚙️ Диагностика: что видно модератору</strong>«Критик: удалено 1, тем 11» — Critic #1 отбросил 1 слабую тему. «Верификация: P ✅0/⚠️7» — ни одно из 7 решений проблем не подтвердилось документацией напрямую. «Валидатор: автоисправлений 1» — LLM вставил <code>*italic*</code> вместо <code>&lt;i&gt;</code>, валидатор это поправил. «Итог: всё штатно» — модератору можно не вчитываться.</li>
+                                <li><strong>💵 Стоимость: $0.01555</strong>Типичный прогон для дня с большим потоком (204 сообщения, 12 тем). Основная доля — у Critic #2 per-topic (~60% токенов, 9 вызовов).</li>
+                            </ul>
+                        </div>
+                    </details>
+                </section>
             </div>
-        </section>
 
-        <!-- DDL digest_runs -->
-        <section>
-            <h2>🗄️ DDL таблицы <code>digest_runs</code></h2>
-            <p>
-                Каждый запуск пишется в PostgreSQL/Supabase нодой «Выполнить INSERT в digest_runs». 
-                Восстановлен по реальному INSERT из ноды «Подготовить SQL»:
-            </p>
-            <pre><code>CREATE TABLE digest_runs (
+            <!-- ===== GROUP: Разработчику ===== -->
+            <div class="docs-group">
+                <div class="docs-group-title">🛠️ Разработчику</div>
+
+                <section class="docs-section" id="config">
+                    <h2>🛠️ Config reference: что и где менять</h2>
+                    <p>
+                        Все настройки сосредоточены в ноде <code>Config</code>
+                        (JS-код в workflow). При переносе на другой чат нужно править:
+                    </p>
+                    <div class="table-wrapper">
+                        <table class="table-code">
+                            <thead><tr><th>Где</th><th>Что менять</th><th>Когда</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>Config.MODERATOR_IDS</code></td><td>Словарь <code>telegram_user_id → name</code> (для метки [MOD] и отнесения тем к releases)</td><td>Смена модераторов чата</td></tr>
+                                <tr><td><code>Config.LLM_PROVIDER.order</code></td><td>Массив провайдеров по приоритету (fallback'и включены)</td><td>Если основной провайдер недоступен</td></tr>
+                                <tr><td><code>Config.LLM_PROVIDER.ignore</code></td><td>Провайдеры, которых нужно исключить (например <code>Cloudflare</code>, <code>DeepInfra</code>)</td><td>Стабильно плохое качество от конкретного провайдера</td></tr>
+                                <tr><td><code>Get chat history.chatId</code> + <code>Send message1.chatId</code></td><td>ID основного чата (источник и публичный канал)</td><td>Перенос на другой чат</td></tr>
+                                <tr><td><code>Send message.chatId</code></td><td>ID приватного чата модераторов</td><td>Перенос на другой чат</td></tr>
+                                <tr><td><code>Fetch README.url</code> + <code>Fetch FAQ.url</code></td><td>URL'ы GitHub RAW для документации</td><td>Смена проекта / репозитория</td></tr>
+                                <tr><td>Системные промпты (<code>Построить запрос тем</code>, <code>Подготовить запрос критика</code> и т.д.)</td><td>Tier-правила, anchor-паттерны, имена модераторов в промпте критика</td><td>Смена тематики чата (другой домен, не XKeen)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="docs-section" id="ddl">
+                    <h2>🗄️ DDL таблицы <code>digest_runs</code></h2>
+                    <p>
+                        Каждый запуск пишется в PostgreSQL/Supabase нодой «Выполнить INSERT в digest_runs».
+                        Восстановлен по реальному INSERT из ноды «Подготовить SQL»:
+                    </p>
+                    <pre><code>CREATE TABLE digest_runs (
   run_at                   TIMESTAMPTZ,
   digest_date              DATE,
   stages_ok                INT,
@@ -2148,165 +1743,98 @@ verifiedTopics.highlight = highlight;</code></pre>
   stage_log                JSONB,
   raw_summary              JSONB
 );</code></pre>
-            <h3>Готовые запросы для мониторинга</h3>
-            <p>Топ-5 самых дорогих дней:</p>
-            <pre><code>SELECT digest_date, cost,
+                    <h3>Готовые запросы для мониторинга</h3>
+                    <p>Топ-5 самых дорогих дней:</p>
+                    <pre><code>SELECT digest_date, cost,
        total_prompt_tokens + total_completion_tokens AS tokens
 FROM digest_runs
 WHERE run_at &gt; NOW() - INTERVAL '30 days'
 ORDER BY cost DESC NULLS LAST
 LIMIT 5;</code></pre>
-            <p>Все случаи fallback'а (по любому этапу):</p>
-            <pre><code>SELECT digest_date, final_status, failed_stages
+                    <p>Все случаи fallback'а (по любому этапу):</p>
+                    <pre><code>SELECT digest_date, final_status, failed_stages
 FROM digest_runs
 WHERE critic_fallback_used = TRUE
    OR verif_fallback_used  = TRUE
    OR 'verifier' = ANY(failed_stages)
 ORDER BY run_at DESC;</code></pre>
-            <p>Распределение по статусам за месяц:</p>
-            <pre><code>SELECT final_status, COUNT(*) AS runs
+                    <p>Распределение по статусам за месяц:</p>
+                    <pre><code>SELECT final_status, COUNT(*) AS runs
 FROM digest_runs
 WHERE run_at &gt; NOW() - INTERVAL '30 days'
 GROUP BY final_status
 ORDER BY runs DESC;</code></pre>
-        </section>
+                </section>
 
-        <!-- Known limitations -->
-        <section>
-            <h2>Известные ограничения</h2>
-            <ul class="feature-list" style="list-style: disc; padding-left: 20px;">
-                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
-                    Работает только с Telegram-чатами (через GramPro API)
-                </li>
-                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
-                    Привязан к OpenRouter как LLM-провайдеру (параметризуется в Config)
-                </li>
-                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
-                    Документация жёстко завязана на XKeen (README + FAQ с GitHub)
-                </li>
-                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
-                    Список модераторов задан статически в Config (3 id)
-                </li>
-                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
-                    Не поддерживает потоковые чаты (только дискретные сообщения)
-                </li>
-                <li style="background: none; border: none; padding: 6px 0; margin: 0;">
-                    Системные промпты (Tier-правила отбора тем, anchor-паттерны для детекта жалоб) настроены под специфику конкретного чата и его тематику — перенос на другой домен требует ручной адаптации промптов, а не только смены chat_id
-                </li>
-            </ul>
-        </section>
+                <section class="docs-section" id="limitations">
+                    <h2>Известные ограничения</h2>
+                    <ul class="bare-list">
+                        <li>Работает только с Telegram-чатами (через GramPro API)</li>
+                        <li>Привязан к OpenRouter как LLM-провайдеру (параметризуется в Config)</li>
+                        <li>Документация жёстко завязана на XKeen (README + FAQ с GitHub)</li>
+                        <li>Список модераторов задан статически в Config (3 id)</li>
+                        <li>Не поддерживает потоковые чаты (только дискретные сообщения)</li>
+                        <li>Системные промпты (Tier-правила отбора тем, anchor-паттерны для детекта жалоб) настроены под специфику конкретного чата и его тематику — перенос на другой домен требует ручной адаптации промптов, а не только смены chat_id</li>
+                    </ul>
+                </section>
 
-        <!-- Glossary -->
-        <section>
-            <h2>📖 Глоссарий терминов</h2>
-            <p>Термины, используемые в системе, в коде workflow и в выводе дайджеста.</p>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Термин</th>
-                            <th>Что значит</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>MSG</code></td>
-                            <td>ID сообщения в Telegram. Используется для ссылок и валидации тем</td>
-                        </tr>
-                        <tr>
-                            <td><code>anchor</code></td>
-                            <td>Самое раннее сообщение темы (от пользователя с жалобой)</td>
-                        </tr>
-                        <tr>
-                            <td><code>anchor candidates</code></td>
-                            <td>Пред-фильтр: ~30 regex-паттернов на RU/EN, выделяют жалобы <strong>до</strong> передачи в LLM</td>
-                        </tr>
-                        <tr>
-                            <td><code>idIndex</code></td>
-                            <td>Словарь <code>id → {sender, isMod, isBot, preview}</code>, строится в ноде «Форматировать для AI»</td>
-                        </tr>
-                        <tr>
-                            <td><code>Tier 1 / Tier 2</code></td>
-                            <td>Приоритеты включения тем. Tier 1 — всегда, Tier 2 — при наличии обсуждения</td>
-                        </tr>
-                        <tr>
-                            <td><code>_conflict</code></td>
-                            <td>Флаг кросс-юзер конфликта: один — «помогло», другой — «не помогло»</td>
-                        </tr>
-                        <tr>
-                            <td><code>solution</code></td>
-                            <td>Конкретное решение (команда/параметр/путь), подтверждённое автором темы</td>
-                        </tr>
-                        <tr>
-                            <td><code>officialNote</code></td>
-                            <td>Решение из README/FAQ, отличающееся от <code>solution</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>verified: true</code></td>
-                            <td>Решение явно подтверждается документацией XKeen</td>
-                        </tr>
-                        <tr>
-                            <td><code>verified: false</code></td>
-                            <td>Решения нет в документации или оно неточное</td>
-                        </tr>
-                        <tr>
-                            <td><code>highlight</code></td>
-                            <td>«Главное за день» — тема с максимальным <code>msgCount</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>lenient parser</code></td>
-                            <td>5-уровневый парсер JSON: снимает markdown-обёртки, чинит запятые, конвертирует Python-стиль (<code>None/True/False</code> → JSON)</td>
-                        </tr>
-                        <tr>
-                            <td><code>fallback</code></td>
-                            <td>Использование данных предыдущего этапа при сбое текущего</td>
-                        </tr>
-                        <tr>
-                            <td><code>id-fallback</code></td>
-                            <td>Принудительное восстановление оригинального <code>id</code> темы (LLM не имеет права менять)</td>
-                        </tr>
-                        <tr>
-                            <td><code>digest_runs</code></td>
-                            <td>Таблица в Supabase/PostgreSQL — лог каждого прогона для аудита и SLA</td>
-                        </tr>
-                        <tr>
-                            <td><code>[MOD]</code></td>
-                            <td>Метка в индексе сообщений, если отправитель — модератор из <code>Config</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>#digest</code></td>
-                            <td>Хештег, добавляемый в публичную версию (без диагностики)</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <section class="docs-section" id="glossary">
+                    <h2>📖 Глоссарий терминов</h2>
+                    <p>Термины, используемые в системе, в коде workflow и в выводе дайджеста.</p>
+                    <div class="table-wrapper">
+                        <table class="table-code">
+                            <thead><tr><th>Термин</th><th>Что значит</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>MSG</code></td><td>ID сообщения в Telegram. Используется для ссылок и валидации тем</td></tr>
+                                <tr><td><code>anchor</code></td><td>Самое раннее сообщение темы (от пользователя с жалобой)</td></tr>
+                                <tr><td><code>anchor candidates</code></td><td>Пред-фильтр: ~30 regex-паттернов на RU/EN, выделяют жалобы <strong>до</strong> передачи в LLM</td></tr>
+                                <tr><td><code>idIndex</code></td><td>Словарь <code>id → {sender, isMod, isBot, preview}</code>, строится в ноде «Форматировать для AI»</td></tr>
+                                <tr><td><code>Tier 1 / Tier 2</code></td><td>Приоритеты включения тем. Tier 1 — всегда, Tier 2 — при наличии обсуждения</td></tr>
+                                <tr><td><code>_conflict</code></td><td>Флаг кросс-юзер конфликта: один — «помогло», другой — «не помогло»</td></tr>
+                                <tr><td><code>solution</code></td><td>Конкретное решение (команда/параметр/путь), подтверждённое автором темы</td></tr>
+                                <tr><td><code>officialNote</code></td><td>Решение из README/FAQ, отличающееся от <code>solution</code></td></tr>
+                                <tr><td><code>verified: true</code></td><td>Решение явно подтверждается документацией XKeen</td></tr>
+                                <tr><td><code>verified: false</code></td><td>Решения нет в документации или оно неточное</td></tr>
+                                <tr><td><code>highlight</code></td><td>«Главное за день» — тема с максимальным <code>msgCount</code></td></tr>
+                                <tr><td><code>lenient parser</code></td><td>5-уровневый парсер JSON: снимает markdown-обёртки, чинит запятые, конвертирует Python-стиль (<code>None/True/False</code> → JSON)</td></tr>
+                                <tr><td><code>fallback</code></td><td>Использование данных предыдущего этапа при сбое текущего</td></tr>
+                                <tr><td><code>id-fallback</code></td><td>Принудительное восстановление оригинального <code>id</code> темы (LLM не имеет права менять)</td></tr>
+                                <tr><td><code>digest_runs</code></td><td>Таблица в Supabase/PostgreSQL — лог каждого прогона для аудита и SLA</td></tr>
+                                <tr><td><code>[MOD]</code></td><td>Метка в индексе сообщений, если отправитель — модератор из <code>Config</code></td></tr>
+                                <tr><td><code>#digest</code></td><td>Хештег, добавляемый в публичную версию (без диагностики)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
-        </section>
 
-        <!-- Contact -->
-        <section>
-            <h2>Контакты</h2>
-            <div class="card" style="text-align: center; padding: 32px;">
-                <p style="margin-bottom: 8px; font-size: 16px; color: var(--text);">
-                    Автор решения: <strong>@dmn_101</strong>
-                </p>
-                <p style="margin-bottom: 0; font-size: 14px;">
-                    По вопросам кастомизации под ваш Telegram-чат и документацию,<br>
-                    white-label внедрения и интеграции с вашей базой знаний —
-                    <a href="https://t.me/dmn_101">пишите в Telegram</a>.
-                </p>
-            </div>
-        </section>
-    </div>
+            <!-- Contact -->
+            <section class="docs-section" id="contact">
+                <h2>Контакты</h2>
+                <div class="card" style="text-align:center;padding:32px;">
+                    <p style="margin-bottom:8px;font-size:var(--text-lg);color:var(--text);">
+                        Автор решения: <strong>@dmn_101</strong>
+                    </p>
+                    <p style="margin-bottom:0;font-size:var(--text-sm);">
+                        По вопросам кастомизации под ваш Telegram-чат и документацию,<br>
+                        white-label внедрения и интеграции с вашей базой знаний —
+                        <a href="https://t.me/dmn_101">пишите в Telegram</a>.
+                    </p>
+                </div>
+            </section>
 
-    <!-- Footer -->
+        </div><!-- /docs-main -->
+    </div><!-- /docs-layout -->
+
+    <!-- ===== FOOTER ===== -->
     <footer>
         <p>AI-дайджест чата поддержки · v0.24 · 2025</p>
-        <p style="font-size: 12px; margin-top: 4px;">
+        <p class="footer-sub">
             Собрано на основе n8n-воркфлоу «Telegram — Дайджест XKEEN (трехэтапный с верификацией и критиком) Per-topic v0.24»
         </p>
     </footer>
 
-</div>
+</div><!-- /container -->
 
 </body>
 </html>
