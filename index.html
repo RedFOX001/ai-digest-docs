@@ -673,20 +673,6 @@
                         <span class="pipe-arrow">→</span>
                         <div class="pipe-node"><span class="pipe-icon">🔍</span>Filter<br/>yesterday</div>
                         <span class="pipe-arrow">→</span>
-                        <div class="pipe-branch">
-                            <div class="pipe-branch-row">
-                                <div class="pipe-node check-node"><span class="pipe-icon">❓</span>Messages<br/>&gt; 0?</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pipeline-row" style="padding-left: 40px;">
-                        <span class="pipe-no">← No →</span>
-                        <div class="pipe-node stop-node"><span class="pipe-icon">⏹</span>Stop</div>
-                    </div>
-
-                    <div class="pipeline-row" style="padding-left: 40px;">
-                        <span class="pipe-yes">← Yes →</span>
                         <div class="pipe-node"><span class="pipe-icon">📝</span>Format<br/>for AI</div>
                         <span class="pipe-arrow">→</span>
                         <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #1<br/>Extract topics</div>
@@ -694,7 +680,7 @@
                         <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #2<br/>Critic #1</div>
                     </div>
 
-                    <div class="pipeline-row" style="padding-left: 80px;">
+                    <div class="pipeline-row">
                         <span class="pipe-arrow">→</span>
                         <div class="pipe-node"><span class="pipe-icon">🔀</span>Splitter<br/>per-topic</div>
                         <span class="pipe-arrow">→</span>
@@ -703,7 +689,7 @@
                         <div class="pipe-node"><span class="pipe-icon">🔗</span>Merge<br/>topics</div>
                     </div>
 
-                    <div class="pipeline-row" style="padding-left: 80px;">
+                    <div class="pipeline-row">
                         <span class="pipe-arrow">→</span>
                         <div class="pipe-node"><span class="pipe-icon">📖</span>Fetch<br/>README + FAQ</div>
                         <span class="pipe-arrow">→</span>
@@ -712,7 +698,7 @@
                         <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #5<br/>Final<br/>generator</div>
                     </div>
 
-                    <div class="pipeline-row" style="padding-left: 80px;">
+                    <div class="pipeline-row">
                         <span class="pipe-arrow">→</span>
                         <div class="pipe-node validator-node"><span class="pipe-icon">✅</span>Code<br/>validator<br/>(0 tokens)</div>
                         <span class="pipe-arrow">→</span>
@@ -721,7 +707,7 @@
                         <div class="pipe-node"><span class="pipe-icon">📨</span>Send to<br/>moderators</div>
                     </div>
 
-                    <div class="pipeline-row" style="padding-left: 80px;">
+                    <div class="pipeline-row">
                         <span class="pipe-arrow">→</span>
                         <div class="pipe-node"><span class="pipe-icon">🧹</span>Clean<br/>for channel</div>
                         <span class="pipe-arrow">→</span>
