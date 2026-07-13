@@ -799,6 +799,152 @@
             </ol>
         </section>
 
+        <!-- Tier rules -->
+        <section>
+            <h2>🎯 Правила отбора тем: Tier 1 и Tier 2</h2>
+            <p>
+                Система фильтрует сообщения по двухуровневой системе приоритетов
+                <strong>до того, как LLM начнёт извлекать темы</strong>. Это не решение модели —
+                это жёсткие правила в промпте экстрактора, которые отсекают шум
+                и выделяют то, что действительно стоит внимания модератора.
+            </p>
+
+            <h3>Tier 1 — ВСЕГДА включать</h3>
+            <p>Даже при одном участнике и без ответов, если есть любой из маркеров:</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Маркер</th>
+                            <th>Пример</th>
+                            <th>НЕ пример</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Модель устройства + тех. симптом</td>
+                            <td><code>KN-2310 + SIGSEGV</code></td>
+                            <td>«у меня KN-1810, всё ок»</td>
+                        </tr>
+                        <tr>
+                            <td>Код ошибки + контекст</td>
+                            <td><code>curl response code: 400 в логе xkeen</code></td>
+                            <td>«ошибка какая-то»</td>
+                        </tr>
+                        <tr>
+                            <td>Версия + явная проблема</td>
+                            <td><code>xray 26.6.1 + вылетает</code></td>
+                            <td>«версия последняя, нормально»</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 13px;">
+                <strong>Допустимые симптомы в Tier 1:</strong> <code>ошибка</code>, <code>краш</code>,
+                <code>не стартует</code>, <code>SIGSEGV</code>, <code>504</code>,
+                <code>таймаут</code>, <code>зависает</code>.<br>
+                <strong>НЕ считаются симптомами:</strong> «не работает», «проблема», «не получается».
+            </p>
+
+            <h3>Tier 2 — Включать при наличии обсуждения</h3>
+            <p>Достаточно <strong>одного</strong> из критериев:</p>
+            <ul class="feature-list">
+                <li>
+                    <strong>3+ участника</strong> в теме, ИЛИ
+                </li>
+                <li>
+                    <strong>2+ с конфигом или скриншотом</strong>, ИЛИ
+                </li>
+                <li>
+                    <strong>1+ с конкретным решением</strong> от модератора или самого автора, ИЛИ
+                </li>
+                <li>
+                    <strong>Вопрос «как решить» + инфраструктурная ситуация</strong> (РКН заблокировал
+                    подсеть, VPS недоступен, IP хостера в бане) — даже при 2 участниках,
+                    если ситуация технически специфична
+                </li>
+            </ul>
+            <p>
+                <strong>⚠️ Важно:</strong> подтверждение от автора может прийти значительно позже
+                в логе (10–100 сообщений спустя). Тема не считается «без подтверждения»,
+                если ответ автора просто далеко от жалобы.
+            </p>
+
+            <h3>Что НЕ включается в дайджест</h3>
+            <ul style="list-style: none; padding-left: 0; margin: 12px 0;">
+                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
+                    ❌ 1 участник + нет ответов + нет маркеров Tier 1
+                </li>
+                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
+                    ❌ Общие вопросы без симптома («как настроить X?», «где почитать?»)
+                </li>
+                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
+                    ❌ Упоминание модели/версии без проблемы («у меня KN-1810, всё ок»)
+                </li>
+                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
+                    ❌ Tip с одной голой ссылкой без описания ЧТО делает инструмент
+                </li>
+                <li style="padding: 8px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary);">
+                    ❌ Решение/воркэраунд от третьего лица без подтверждения автора темы
+                </li>
+            </ul>
+
+            <h3>Примеры из реальной работы</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Сообщение</th>
+                            <th>Вердикт</th>
+                            <th>Почему</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>«XKeen падает с SIGSEGV на KN-2310»</td>
+                            <td><span class="status-badge green">✅ problems</span></td>
+                            <td>Tier 1: модель + SIGSEGV</td>
+                        </tr>
+                        <tr>
+                            <td>«curl response code: 400 в логе xkeen»</td>
+                            <td><span class="status-badge green">✅ problems</span></td>
+                            <td>Tier 1: код ошибки + контекст</td>
+                        </tr>
+                        <tr>
+                            <td>«3 участника обсуждают Warp, решения нет»</td>
+                            <td><span class="status-badge green">✅ problems</span></td>
+                            <td>Tier 2: 3+ участника</td>
+                        </tr>
+                        <tr>
+                            <td>«Как настроить X, если РКН заблокировал подсеть»</td>
+                            <td><span class="status-badge green">✅ problems</span></td>
+                            <td>Tier 2: инфраструктурная ситуация</td>
+                        </tr>
+                        <tr>
+                            <td>«Не работает интернет» (1 чел., без деталей)</td>
+                            <td><span class="status-badge red">❌ не включать</span></td>
+                            <td>Нет ни симптома, ни кода, ни версии</td>
+                        </tr>
+                        <tr>
+                            <td>«У меня KN-1810, всё ок»</td>
+                            <td><span class="status-badge red">❌ не включать</span></td>
+                            <td>Упоминание без проблемы</td>
+                        </tr>
+                        <tr>
+                            <td>«arshteyn пустил трафик через warp, я составил белый список»</td>
+                            <td><span class="status-badge red">❌ solution: null</span></td>
+                            <td>Автор темы не подтвердил</td>
+                        </tr>
+                        <tr>
+                            <td>«XKeen-UI от zxc-rv — Ссылка на репозиторий»</td>
+                            <td><span class="status-badge red">❌ не включать</span></td>
+                            <td>Tip без описания ЧТО делает</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- LLM stages -->
         <section>
             <h2>Этапы LLM-конвейера</h2>
