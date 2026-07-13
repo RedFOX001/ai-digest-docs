@@ -51,91 +51,182 @@
             padding: 0 24px;
         }
 
-        /* ===== INTRO ===== */
-        .intro {
-            padding: 60px 0 40px;
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            padding: 80px 0 48px;
             border-bottom: 1px solid var(--border);
+            overflow: hidden;
         }
 
-        .intro-tag {
-            display: inline-block;
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(ellipse at center, rgba(88,166,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero > * { position: relative; z-index: 1; }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 4px 14px;
+            padding: 6px 16px;
             font-size: var(--text-xs);
             color: var(--text-secondary);
-            margin-bottom: 16px;
+            margin-bottom: 24px;
         }
 
-        .intro h1 {
-            font-size: var(--text-2xl);
-            font-weight: 700;
-            letter-spacing: -0.75px;
-            line-height: 1.2;
-            margin-bottom: 16px;
+        .hero-tag .tag-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        .intro h1 .hl { color: var(--accent); }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
 
-        .intro-desc {
-            font-size: var(--text-lg);
+        .hero h1 {
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            max-width: 720px;
+        }
+
+        .hero h1 .hl {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-desc {
+            font-size: 18px;
             color: var(--text-secondary);
-            max-width: 700px;
-            margin-bottom: 32px;
-            line-height: 1.5;
+            max-width: 640px;
+            margin-bottom: 36px;
+            line-height: 1.55;
         }
 
-        .intro-cards {
+        /* Stats row */
+        .hero-stats {
             display: flex;
-            flex-direction: column;
-            gap: 24px;
-            margin-bottom: 32px;
+            gap: 32px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
         }
 
-        .role-label {
-            font-size: var(--text-sm);
-            font-weight: 600;
+        .hero-stat .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .hero-stat .stat-value .stat-unit {
+            font-size: 16px;
+            font-weight: 500;
             color: var(--text-secondary);
-            margin-bottom: 10px;
+        }
+
+        .hero-stat .stat-label {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .role-cards {
+        /* Compare cards */
+        .hero-compare {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0;
+            margin-bottom: 16px;
+            align-items: stretch;
         }
 
-        .role-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
+        .compare-side {
+            padding: 24px;
+            border-radius: 10px;
         }
 
-        .role-card .rc-icon { font-size: 20px; margin-bottom: 4px; }
-        .role-card .rc-label { font-size: var(--text-xs); font-weight: 600; margin-bottom: 4px; }
-        .role-card .rc-label.was { color: var(--accent-red); }
-        .role-card .rc-label.now { color: var(--accent-green); }
-        .role-card .rc-text { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.4; }
+        .compare-side.was {
+            background: linear-gradient(180deg, rgba(248,81,73,0.06) 0%, var(--bg-card) 100%);
+            border: 1px solid rgba(248,81,73,0.15);
+        }
 
-        .card-feature {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
+        .compare-side.now {
+            background: linear-gradient(180deg, rgba(63,185,80,0.06) 0%, var(--bg-card) 100%);
+            border: 1px solid rgba(63,185,80,0.15);
+        }
+
+        .compare-label {
+            font-size: var(--text-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .compare-side.was .compare-label { color: var(--accent-red); }
+        .compare-side.now .compare-label { color: var(--accent-green); }
+
+        .compare-text {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .compare-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+
+        /* Trust badge */
+        .hero-trust {
             display: flex;
             align-items: center;
             gap: 12px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 32px;
+            transition: border-color 0.2s;
         }
 
-        .card-feature .cf-icon { font-size: 24px; flex-shrink: 0; }
-        .card-feature .cf-text { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.4; }
-        .card-feature .cf-text strong { color: var(--text); }
+        .hero-trust:hover { border-color: var(--accent); }
 
-        .cta-group {
+        .hero-trust .trust-icon { font-size: 28px; flex-shrink: 0; }
+        .hero-trust .trust-text { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.4; }
+        .hero-trust .trust-text strong { color: var(--text); }
+
+        /* CTA */
+        .hero-cta {
             display: flex;
             align-items: center;
             gap: 20px;
@@ -143,18 +234,23 @@
         }
 
         .cta-button {
-            display: inline-block;
-            padding: 10px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
             background: var(--accent);
             color: var(--bg);
-            font-weight: 600;
+            font-weight: 700;
             font-size: var(--text-sm);
-            border-radius: 6px;
+            border-radius: 8px;
             text-decoration: none;
-            transition: opacity 0.15s;
+            transition: transform 0.15s, box-shadow 0.15s;
         }
 
-        .cta-button:hover { opacity: 0.85; }
+        .cta-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(88,166,255,0.3);
+        }
 
         .cta-secondary { font-size: var(--text-sm); color: var(--text-secondary); }
         .cta-secondary a { color: var(--accent); }
