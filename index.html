@@ -1375,6 +1375,48 @@ flowchart TD
             </div>
         </section>
 
+        <!-- Two-tier output -->
+        <section>
+            <h2>📤 Два канала публикации: модераторы и публичный канал</h2>
+            <p>
+                Один и тот же конвейер формирует <strong>два разных сообщения</strong>:
+                полное (с диагностикой) уходит модераторам, очищенное
+                (без диагностики, с хештегом <code>#digest</code>) — в публичный канал.
+            </p>
+            <div class="mermaid-legend">
+                <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>финальный LLM</span>
+                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка</span>
+                <span class="item"><span class="dot" style="background:#2d1414; border:1px solid #f85149;"></span>приватный канал</span>
+                <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>публичный канал</span>
+            </div>
+            <div class="mermaid-container">
+<pre class="mermaid">
+flowchart LR
+    A["&lt;b&gt;LLM #5 Final&lt;/b&gt;&lt;br/&gt;HTML text"]
+    B["&lt;b&gt;Собрать итоговое&lt;/b&gt;&lt;br/&gt;+ header&lt;br/&gt;+ footer&lt;br/&gt;+ ⚙️ диагностика&lt;br/&gt;+ стоимость"]
+    C["📨 &lt;b&gt;Модераторам&lt;/b&gt;&lt;br/&gt;chat_id: 5075151287&lt;br/&gt;+ диагностика&lt;br/&gt;+ стоимость&lt;br/&gt;+ токены"]
+    D["🧹 &lt;b&gt;Очистить&lt;/b&gt;&lt;br/&gt;удалить ⚙️ диагностику&lt;br/&gt;удалить footer модели&lt;br/&gt;+ #digest + автор"]
+    E["📨 &lt;b&gt;Публичный канал&lt;/b&gt;&lt;br/&gt;chat_id: 2138190368&lt;br/&gt;#digest + автор"]
+
+    A --&gt; B
+    B --&gt; C
+    B --&gt; D
+    D --&gt; E
+
+    style A fill:#2d2410,stroke:#d29922,color:#e6edf3
+    style B fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style C fill:#2d1414,stroke:#f85149,color:#e6edf3
+    style D fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style E fill:#132f1a,stroke:#3fb950,color:#e6edf3
+</pre>
+            </div>
+            <p class="mermaid-caption">
+                <strong>Красный</strong> — приватная версия для модераторов (с диагностикой).
+                <strong>Зелёный</strong> — публичная версия для канала (без диагностики).
+                Один и тот же текст обрабатывается двумя разными путями после сборки.
+            </p>
+        </section>
+
         <!-- Statuses in digest -->
         <section>
             <h2>Статусы в дайджесте</h2>
