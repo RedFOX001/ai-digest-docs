@@ -585,21 +585,45 @@
             и присылает готовый дайджест с ссылками на реальные сообщения.
         </p>
 
-        <div class="cards">
-            <div class="card-compare">
-                <div class="icon">😩</div>
-                <div class="card-title">Было</div>
-                <div class="card-text">Модератор вручную читает чат час в день, пропускает половину жалоб</div>
+        <div class="cards" style="display: flex; flex-direction: column; gap: 24px; margin-bottom: 32px;">
+            <!-- Модератору -->
+            <div class="role-group">
+                <div class="role-label">👤 Для модератора</div>
+                <div class="role-cards">
+                    <div class="role-card">
+                        <div class="rc-icon">😩</div>
+                        <div class="rc-label was">Было</div>
+                        <div class="rc-text">Модератор вручную читает чат час в день, пропускает половину жалоб</div>
+                    </div>
+                    <div class="role-card">
+                        <div class="rc-icon">✅</div>
+                        <div class="rc-label now">Стало</div>
+                        <div class="rc-text">Модератор получает готовый список проблем и решений — и точно знает, где нужно вмешаться</div>
+                    </div>
+                </div>
             </div>
-            <div class="card-compare">
-                <div class="icon">✅</div>
-                <div class="card-title">Стало</div>
-                <div class="card-text">Раз в день приходит готовый отчёт: что случилось, что решили, что нового</div>
+
+            <!-- Участнику -->
+            <div class="role-group">
+                <div class="role-label">💬 Для участника чата</div>
+                <div class="role-cards">
+                    <div class="role-card">
+                        <div class="rc-icon">😩</div>
+                        <div class="rc-label was">Было</div>
+                        <div class="rc-text">Участник пролистывает сотни сообщений за день, чтобы узнать, решилась ли его проблема и что обсуждает сообщество</div>
+                    </div>
+                    <div class="role-card">
+                        <div class="rc-icon">✅</div>
+                        <div class="rc-label now">Стало</div>
+                        <div class="rc-text">Участник читает один короткий дайджест утром — и сразу видит, что решилось и что обсуждает сообщество</div>
+                    </div>
+                </div>
             </div>
-            <div class="card-compare">
-                <div class="icon">🔒</div>
-                <div class="card-title">Без выдумок</div>
-                <div class="card-text">Каждый пункт — ссылка на реальное сообщение, ничего не придумано</div>
+
+            <!-- Без выдумок -->
+            <div class="card-feature">
+                <div class="cf-icon">🔒</div>
+                <div class="cf-text"><strong>Без выдумок</strong> — каждый пункт дайджеста содержит ссылку на реальное сообщение в чате, ничего не придумано</div>
             </div>
         </div>
 
