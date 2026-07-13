@@ -599,21 +599,6 @@
 
         .step-list li strong { color: var(--text); }
 
-        /* ===== AUTHOR BAR ===== */
-        .author-bar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: var(--text-sm);
-            margin: 24px 0;
-        }
-
-        .author-bar .label { color: var(--text-secondary); }
-
         /* ===== PIPELINE ===== */
         .pipeline {
             background: var(--bg-card);
@@ -917,6 +902,17 @@
     <script>
         // Scrollspy + back-to-top
         document.addEventListener('DOMContentLoaded', function() {
+
+            // --- Sidebar details: open on desktop, closed on mobile ---
+            const sidebarDetails = document.querySelector('.sidebar-details');
+            function syncSidebarDetails() {
+                if (!sidebarDetails) return;
+                sidebarDetails.open = window.innerWidth > 1024;
+            }
+            syncSidebarDetails();
+            window.addEventListener('resize', syncSidebarDetails);
+
+            // --- Scrollspy ---
             // --- Scrollspy ---
             const sections = document.querySelectorAll('.docs-section[id]');
             const navLinks = document.querySelectorAll('.docs-nav-group a');
@@ -1021,7 +1017,7 @@
 
         <!-- ===== SIDEBAR TOC ===== -->
         <aside class="docs-sidebar">
-            <details class="sidebar-details" open>
+            <details class="sidebar-details">
                 <summary class="sidebar-summary">Оглавление</summary>
                 <div class="docs-sidebar-title">На этой странице</div>
             <nav class="docs-nav">
@@ -1088,13 +1084,6 @@
 
         <!-- ===== MAIN CONTENT ===== -->
         <div class="docs-main">
-
-            <!-- Author bar -->
-            <div class="author-bar">
-                <span class="label">Автор решения:</span>
-                <a href="https://t.me/dmn_101">@dmn_101</a>
-                <span class="label">· Кастомизация и внедрение</span>
-            </div>
 
             <!-- ===== GROUP: Обзор ===== -->
             <div class="docs-group">
