@@ -1258,6 +1258,78 @@ flowchart LR
             </ul>
         </section>
 
+        <!-- Conflict detection flow -->
+        <section>
+            <h2>⚔️ Детекция cross-user конфликтов: как это работает</h2>
+            <p>
+                Самый интересный кусок системы: <strong>LLM #3 (Critic #2) per-topic</strong> умеет
+                отличать <strong>истинный</strong> конфликт (два разных юзера с разными
+                результатами) от <strong>ложного</strong> (просто похожие слова в разных темах).
+                Истинный → решение понижается до «предложено» с маркером «результаты расходятся».
+            </p>
+            <div class="mermaid-legend">
+                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>узел проверки</span>
+                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #8b949e;"></span>без изменений</span>
+                <span class="item"><span class="dot" style="background:#2d1414; border:1px solid #f85149;"></span>истинный конфликт</span>
+                <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>ложный (игнор)</span>
+            </div>
+            <div class="mermaid-container">
+<pre class="mermaid">
+flowchart TD
+    Start["LLM #3 Critic #2&lt;br/&gt;проверяет проблему"]
+    Q1{"В логе есть&lt;br/&gt;противоречия?&lt;br/&gt;«помогло» vs «не работает»"}
+    NoQ["_conflict: false&lt;br/&gt;без изменений"]
+    Same{"Автор&lt;br/&gt;тот же?"}
+    MultiAuth["Разные авторы&lt;br/&gt;3 условия"]
+    SameAuth["Один автор&lt;br/&gt;2 условия"]
+    M1{"(1) Другой&lt;br/&gt;продукт?"}
+    M2{"(2) Другое&lt;br/&gt;устройство?"}
+    M3{"(3) Другая&lt;br/&gt;ошибка?"}
+    S1{"(1) Другой&lt;br/&gt;продукт?"}
+    S3{"(3) Другая&lt;br/&gt;ошибка?"}
+    False["ЛОЖНЫЙ конфликт&lt;br/&gt;игнорировать"]
+    True["ИСТИННЫЙ конфликт&lt;br/&gt;_conflict: true&lt;br/&gt;resolved: false&lt;br/&gt;solution: «Предложено: ...&lt;br/&gt;(результаты расходятся)»"]
+
+    Start --&gt; Q1
+    Q1 --&gt;|Нет| NoQ
+    Q1 --&gt;|Да| Same
+    Same --&gt;|Нет| MultiAuth
+    Same --&gt;|Да| SameAuth
+    MultiAuth --&gt; M1
+    M1 --&gt;|Нет| True
+    M1 --&gt;|Да| M2
+    M2 --&gt;|Нет| True
+    M2 --&gt;|Да| M3
+    M3 --&gt;|Нет| True
+    M3 --&gt;|Да| False
+    SameAuth --&gt; S1
+    S1 --&gt;|Да| False
+    S1 --&gt;|Нет| S3
+    S3 --&gt;|Да| False
+    S3 --&gt;|Нет| True
+
+    style Start fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style Q1 fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style Same fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style MultiAuth fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style SameAuth fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style M1 fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style M2 fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style M3 fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style S1 fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style S3 fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style NoQ fill:#1f2937,stroke:#8b949e,color:#e6edf3
+    style True fill:#2d1414,stroke:#f85149,color:#e6edf3
+    style False fill:#132f1a,stroke:#3fb950,color:#e6edf3
+</pre>
+            </div>
+            <p class="mermaid-caption">
+                Условия проверяются в порядке (1) → (2) → (3). <strong>Достаточно одного несовпадения</strong>,
+                чтобы конфликт считался истинным. Все три должны совпасть, чтобы конфликт был ложным.
+                Для одного автора проверяются только (1) и (3) — устройство не различается.
+            </p>
+        </section>
+
         <!-- Tech stack -->
         <section>
             <h2>Технический стек</h2>
