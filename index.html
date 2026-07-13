@@ -1171,6 +1171,92 @@
             </ul>
         </section>
 
+        <!-- Glossary -->
+        <section>
+            <h2>📖 Глоссарий терминов</h2>
+            <p>Термины, используемые в системе, в коде workflow и в выводе дайджеста.</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Термин</th>
+                            <th>Что значит</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>MSG</code></td>
+                            <td>ID сообщения в Telegram. Используется для ссылок и валидации тем</td>
+                        </tr>
+                        <tr>
+                            <td><code>anchor</code></td>
+                            <td>Самое раннее сообщение темы (от пользователя с жалобой)</td>
+                        </tr>
+                        <tr>
+                            <td><code>anchor candidates</code></td>
+                            <td>Пред-фильтр: ~30 regex-паттернов на RU/EN, выделяют жалобы <strong>до</strong> передачи в LLM</td>
+                        </tr>
+                        <tr>
+                            <td><code>idIndex</code></td>
+                            <td>Словарь <code>id → {sender, isMod, isBot, preview}</code>, строится в ноде «Форматировать для AI»</td>
+                        </tr>
+                        <tr>
+                            <td><code>Tier 1 / Tier 2</code></td>
+                            <td>Приоритеты включения тем. Tier 1 — всегда, Tier 2 — при наличии обсуждения</td>
+                        </tr>
+                        <tr>
+                            <td><code>_conflict</code></td>
+                            <td>Флаг кросс-юзер конфликта: один — «помогло», другой — «не помогло»</td>
+                        </tr>
+                        <tr>
+                            <td><code>solution</code></td>
+                            <td>Конкретное решение (команда/параметр/путь), подтверждённое автором темы</td>
+                        </tr>
+                        <tr>
+                            <td><code>officialNote</code></td>
+                            <td>Решение из README/FAQ, отличающееся от <code>solution</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>verified: true</code></td>
+                            <td>Решение явно подтверждается документацией XKeen</td>
+                        </tr>
+                        <tr>
+                            <td><code>verified: false</code></td>
+                            <td>Решения нет в документации или оно неточное</td>
+                        </tr>
+                        <tr>
+                            <td><code>highlight</code></td>
+                            <td>«Главное за день» — тема с максимальным <code>msgCount</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>lenient parser</code></td>
+                            <td>5-уровневый парсер JSON: снимает markdown-обёртки, чинит запятые, конвертирует Python-стиль (<code>None/True/False</code> → JSON)</td>
+                        </tr>
+                        <tr>
+                            <td><code>fallback</code></td>
+                            <td>Использование данных предыдущего этапа при сбое текущего</td>
+                        </tr>
+                        <tr>
+                            <td><code>id-fallback</code></td>
+                            <td>Принудительное восстановление оригинального <code>id</code> темы (LLM не имеет права менять)</td>
+                        </tr>
+                        <tr>
+                            <td><code>digest_runs</code></td>
+                            <td>Таблица в Supabase/PostgreSQL — лог каждого прогона для аудита и SLA</td>
+                        </tr>
+                        <tr>
+                            <td><code>[MOD]</code></td>
+                            <td>Метка в индексе сообщений, если отправитель — модератор из <code>Config</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>#digest</code></td>
+                            <td>Хештег, добавляемый в публичную версию (без диагностики)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <!-- Contact -->
         <section>
             <h2>Контакты</h2>
