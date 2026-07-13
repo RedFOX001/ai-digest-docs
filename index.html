@@ -741,7 +741,11 @@
                 border-bottom: 1px solid var(--border);
             }
 
-            .docs-nav { display: flex; flex-wrap: wrap; gap: 16px; }
+            .docs-nav {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px 20px;
+            }
             .docs-nav-group { margin-bottom: 0; }
             .docs-nav-group-title { padding-left: 0; }
 
@@ -752,16 +756,32 @@
         @media (max-width: 640px) {
             .container { padding: 0 16px; }
             .hero { padding: 48px 0 32px; }
-            .hero h1 { font-size: 32px; }
+            .hero h1 { font-size: 28px; letter-spacing: -0.5px; }
+            .hero h1 br { display: none; }
             .hero-desc { font-size: var(--text-base); }
-            .hero-compare { grid-template-columns: 1fr; }
+            .hero-compare { grid-template-columns: 1fr; gap: 12px; }
             .compare-arrow { transform: rotate(90deg); padding: 4px 0; }
-            .hero-stats { gap: 20px; }
+            .compare-side { padding: 20px; }
+            .hero-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
             .hero-cta { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .role-cards, .card-grid { grid-template-columns: 1fr; }
+            .card-grid { grid-template-columns: 1fr; }
             .pipe-node { min-width: 80px; font-size: var(--text-xs); padding: 6px 8px; }
             .pipe-arrow { font-size: var(--text-xs); }
             .mermaid-container { padding: 12px; }
+            .step-list li { padding-left: 44px; }
+            .step-list li::before { left: 10px; width: 22px; height: 22px; font-size: var(--text-xs); }
+            .docs-nav { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 380px) {
+            .hero h1 { font-size: 24px; }
+            .hero-stats { grid-template-columns: 1fr; }
+            .docs-nav { grid-template-columns: 1fr; }
+            .hero-stat .stat-value { font-size: 24px; }
         }
     </style>
 
