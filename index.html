@@ -574,49 +574,77 @@
         <!-- Pipeline diagram -->
         <section>
             <h2>Архитектура конвейера</h2>
-            <div class="mermaid-wrapper">
-                <pre class="mermaid" style="background: transparent; border: none; padding: 0;">
-flowchart LR
-    A["📅 Schedule<br/>00:21 MSK"] --> B["📥 Get chat<br/>history"]
-    B --> C["🔍 Filter<br/>yesterday"]
-    C --> D{"Messages<br/>> 0?"}
-    D -->|No| E["⏹ Stop"]
-    D -->|Yes| F["📝 Format<br/>for AI"]
-    F --> G["🤖 LLM #1<br/>Extract topics"]
-    G --> H["🤖 LLM #2<br/>Critic #1"]
-    H --> I["🔀 Splitter<br/>per-topic"]
-    I --> J["🤖 LLM #3<br/>Critic #2<br/>per-topic"]
-    J --> K["🔗 Merge<br/>topics"]
-    K --> L["📖 Fetch<br/>README + FAQ"]
-    L --> M["🤖 LLM #4<br/>Verify by<br/>docs"]
-    M --> N["🤖 LLM #5<br/>Final<br/>generator"]
-    N --> O["✅ Code<br/>validator<br/>(0 tokens)"]
-    O --> P["📊 Logging<br/>+ SQL"]
-    P --> Q["📨 Send to<br/>moderators"]
-    Q --> R["🧹 Clean<br/>for channel"]
-    R --> S["📨 Send to<br/>public channel"]
+            <div class="pipeline">
+                <div class="pipeline-grid">
 
-    style A fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style B fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style C fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style D fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style E fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style F fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style G fill:#132f1a,stroke:#1a4a2a,color:#3fb950
-    style H fill:#132f1a,stroke:#1a4a2a,color:#3fb950
-    style I fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style J fill:#132f1a,stroke:#1a4a2a,color:#3fb950
-    style K fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style L fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style M fill:#132f1a,stroke:#1a4a2a,color:#3fb950
-    style N fill:#132f1a,stroke:#1a4a2a,color:#3fb950
-    style O fill:#2d2410,stroke:#4b3a16,color:#d29922
-    style P fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style Q fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style R fill:#1f2937,stroke:#30363d,color:#e6edf3
-    style S fill:#1f2937,stroke:#30363d,color:#e6edf3
-                </pre>
+                    <div class="pipeline-row">
+                        <div class="pipe-node"><span class="pipe-icon">📅</span>Schedule<br/>00:21 MSK</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">📥</span>Get chat<br/>history</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">🔍</span>Filter<br/>yesterday</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-branch">
+                            <div class="pipe-branch-row">
+                                <div class="pipe-node check-node"><span class="pipe-icon">❓</span>Messages<br/>&gt; 0?</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-row" style="padding-left: 40px;">
+                        <span class="pipe-no">← No →</span>
+                        <div class="pipe-node stop-node"><span class="pipe-icon">⏹</span>Stop</div>
+                    </div>
+
+                    <div class="pipeline-row" style="padding-left: 40px;">
+                        <span class="pipe-yes">← Yes →</span>
+                        <div class="pipe-node"><span class="pipe-icon">📝</span>Format<br/>for AI</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #1<br/>Extract topics</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #2<br/>Critic #1</div>
+                    </div>
+
+                    <div class="pipeline-row" style="padding-left: 80px;">
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">🔀</span>Splitter<br/>per-topic</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #3<br/>Critic #2<br/>per-topic</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">🔗</span>Merge<br/>topics</div>
+                    </div>
+
+                    <div class="pipeline-row" style="padding-left: 80px;">
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">📖</span>Fetch<br/>README + FAQ</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #4<br/>Verify by<br/>docs</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node llm-node"><span class="pipe-icon">🤖</span>LLM #5<br/>Final<br/>generator</div>
+                    </div>
+
+                    <div class="pipeline-row" style="padding-left: 80px;">
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node validator-node"><span class="pipe-icon">✅</span>Code<br/>validator<br/>(0 tokens)</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">📊</span>Logging<br/>+ SQL</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">📨</span>Send to<br/>moderators</div>
+                    </div>
+
+                    <div class="pipeline-row" style="padding-left: 80px;">
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">🧹</span>Clean<br/>for channel</div>
+                        <span class="pipe-arrow">→</span>
+                        <div class="pipe-node"><span class="pipe-icon">📨</span>Send to<br/>public channel</div>
+                    </div>
+
+                </div>
             </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: -16px; margin-bottom: 0;">
+                <span style="display: inline-block; background: #132f1a; border: 1px solid #1a4a2a; border-radius: 3px; padding: 1px 6px; font-size: 11px; color: var(--accent-green);">🤖 LLM-этапы</span>
+                <span style="display: inline-block; background: #2d2410; border: 1px solid #4b3a16; border-radius: 3px; padding: 1px 6px; font-size: 11px; color: var(--accent-yellow); margin-left: 6px;">✅ Валидатор (0 токенов)</span>
+            </p>
         </section>
 
         <!-- How it works -->
