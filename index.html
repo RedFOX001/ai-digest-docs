@@ -1133,6 +1133,57 @@ flowchart TD
             </div>
         </section>
 
+        <!-- Data shape transformation -->
+        <section>
+            <h2>🔄 Трансформация данных по этапам</h2>
+            <p>
+                На каждом этапе данные меняют форму: сырой массив сообщений превращается
+                в структурированный JSON, затем в HTML-текст, затем в строку в Supabase.
+                Понимание этой трансформации помогает при отладке.
+            </p>
+            <div class="mermaid-legend">
+                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка без LLM</span>
+                <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>LLM (структура)</span>
+                <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>LLM (текст)</span>
+                <span class="item"><span class="dot" style="background:#1c2128; border:1px solid #bc8cff;"></span>SQL</span>
+            </div>
+            <div class="mermaid-container">
+<pre class="mermaid">
+flowchart LR
+    A["&lt;b&gt;Get chat history&lt;/b&gt;&lt;br/&gt;Array&lt;Message&gt;&lt;br/&gt;{id, text, sender, date}"]
+    B["&lt;b&gt;Filter yesterday&lt;/b&gt;&lt;br/&gt;Array&lt;Message&gt;&lt;br/&gt;filtered by MSK + bot"]
+    C["&lt;b&gt;Format for AI&lt;/b&gt;&lt;br/&gt;{messagesText,&lt;br/&gt;idIndex, anchorBlock}"]
+    D["&lt;b&gt;LLM #1 Extract&lt;/b&gt;&lt;br/&gt;{releases,&lt;br/&gt;problems, tips}"]
+    E["&lt;b&gt;LLM #2 Critic #1&lt;/b&gt;&lt;br/&gt;{..., _diagnostics,&lt;br/&gt;_idStripped}"]
+    F["&lt;b&gt;LLM #3 Critic #2&lt;/b&gt;&lt;br/&gt;per-topic:&lt;br/&gt;[{topic, _conflict}]"]
+    G["&lt;b&gt;Merge&lt;/b&gt;&lt;br/&gt;{releases,&lt;br/&gt;problems, tips}"]
+    H["&lt;b&gt;LLM #4 Verifier&lt;/b&gt;&lt;br/&gt;{..., verified,&lt;br/&gt;officialNote}"]
+    I["&lt;b&gt;LLM #5 Final&lt;/b&gt;&lt;br/&gt;&lt;b&gt;string&lt;/b&gt; (HTML)"]
+    J["&lt;b&gt;Validator&lt;/b&gt;&lt;br/&gt;&lt;b&gt;string&lt;/b&gt; (cleaned)"]
+    K["&lt;b&gt;SQL Insert&lt;/b&gt;&lt;br/&gt;&lt;b&gt;digest_runs&lt;/b&gt; row"]
+
+    A --&gt; B --&gt; C --&gt; D --&gt; E --&gt; F --&gt; G --&gt; H --&gt; I --&gt; J --&gt; K
+
+    style A fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style B fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style C fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style D fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style E fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style F fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style G fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style H fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style I fill:#2d2410,stroke:#d29922,color:#e6edf3
+    style J fill:#2d2410,stroke:#d29922,color:#e6edf3
+    style K fill:#1c2128,stroke:#bc8cff,color:#e6edf3
+</pre>
+            </div>
+            <p class="mermaid-caption">
+                Ключевая трансформация: после LLM #1 данные становятся <strong>структурированными</strong>
+                (JSON с типизированными полями), а после LLM #5 — <strong>неструктурированным</strong> HTML-текстом.
+                Validator возвращает данные в string-форму для финальной сборки.
+            </p>
+        </section>
+
         <!-- Key metrics -->
         <section>
             <h2>Ключевые метрики</h2>
