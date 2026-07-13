@@ -751,10 +751,14 @@
 
         @media (max-width: 640px) {
             .container { padding: 0 16px; }
-            .intro { padding: 40px 0 24px; }
-            .intro h1 { font-size: 28px; }
+            .hero { padding: 48px 0 32px; }
+            .hero h1 { font-size: 32px; }
+            .hero-desc { font-size: var(--text-base); }
+            .hero-compare { grid-template-columns: 1fr; }
+            .compare-arrow { transform: rotate(90deg); padding: 4px 0; }
+            .hero-stats { gap: 20px; }
+            .hero-cta { flex-direction: column; align-items: flex-start; gap: 12px; }
             .role-cards, .card-grid { grid-template-columns: 1fr; }
-            .cta-group { flex-direction: column; align-items: flex-start; gap: 12px; }
             .pipe-node { min-width: 80px; font-size: var(--text-xs); padding: 6px 8px; }
             .pipe-arrow { font-size: var(--text-xs); }
             .mermaid-container { padding: 12px; }
