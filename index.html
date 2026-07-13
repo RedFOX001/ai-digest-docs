@@ -1453,6 +1453,175 @@ flowchart LR
             </div>
         </section>
 
+        <!-- Digest structure -->
+        <section>
+            <h2>📐 Структура дайджеста: 4 секции, точные правила</h2>
+            <p>
+                Дайджест всегда собирается в одном и том же порядке. Секции могут
+                отсутствовать, если соответствующий массив пустой — это не ошибка,
+                а явное правило рендеринга.
+            </p>
+
+            <h3>Порядок и условия появления секций</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Секция</th>
+                            <th>Эмодзи</th>
+                            <th>Условие появления</th>
+                            <th>Источник данных</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Самое обсуждаемое за день</td>
+                            <td>🏆</td>
+                            <td><code>problems.length &gt; 0</code></td>
+                            <td><code>highlight</code> — вытаскивается из <code>problems[]</code> после сортировки по <code>msgCount</code></td>
+                        </tr>
+                        <tr>
+                            <td>Новости и релизы</td>
+                            <td>📣</td>
+                            <td><code>releases.length &gt; 0</code></td>
+                            <td>Массив <code>releases[]</code> целиком</td>
+                        </tr>
+                        <tr>
+                            <td>Проблемы и решения</td>
+                            <td>⚠️</td>
+                            <td><code>problems.length &gt; 0</code> (остаток после highlight)</td>
+                            <td><code>problems[]</code> после удаления highlight, отсортированы по <code>msgCount</code> (убыв.)</td>
+                        </tr>
+                        <tr>
+                            <td>Советы дня</td>
+                            <td>📌</td>
+                            <td><code>tips.length &gt; 0</code></td>
+                            <td>Массив <code>tips[]</code> целиком (до 5 шт.)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Как формируется highlight</h3>
+            <p>
+                <code>highlight</code> — это <strong>самая обсуждаемая проблема дня</strong>:
+                берётся первый элемент из <code>problems[]</code> после сортировки по
+                <code>msgCount</code> (по убыванию) и удаляется из основного массива
+                через <code>shift()</code>. Это аппаратная логика в ноде «Подготовить
+                финальный запрос» — финальный LLM <strong>не выбирает</strong> highlight сам.
+            </p>
+            <pre><code>verifiedTopics.problems.sort((a, b) =&gt; Number(b.msgCount) - Number(a.msgCount));
+highlight = verifiedTopics.problems.shift();
+verifiedTopics.highlight = highlight;</code></pre>
+
+            <h3>Полная логика статусов (6 комбинаций)</h3>
+            <p>
+                Каждый пункт в дайджесте получает один из 3 значков в зависимости от
+                комбинации трёх полей. Полная спецификация:
+            </p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Значок</th>
+                            <th>resolved</th>
+                            <th>solution</th>
+                            <th>officialNote</th>
+                            <th>Что в тексте</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>✅</td>
+                            <td><code>true</code></td>
+                            <td>не пустое</td>
+                            <td>любое</td>
+                            <td><i>Решение: {solution}</i> [✅]</td>
+                        </tr>
+                        <tr>
+                            <td>✅</td>
+                            <td><code>true</code></td>
+                            <td>пустое</td>
+                            <td>не пустое</td>
+                            <td><i>Решение из документации: {officialNote}</i> [✅]</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ предложено</td>
+                            <td><code>false</code></td>
+                            <td>не пустое</td>
+                            <td>любое</td>
+                            <td><i>Предложено: {solution}</i> [⚠️ предложено]</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ предложено</td>
+                            <td><code>false</code></td>
+                            <td>пустое</td>
+                            <td>не пустое</td>
+                            <td><i>Решение из документации: {officialNote}</i> [⚠️ предложено]</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ предложено (конфликт)</td>
+                            <td><code>false</code></td>
+                            <td>содержит «расходятся»</td>
+                            <td><code>null</code></td>
+                            <td><i>{solution}</i> с маркером «результаты у пользователей расходятся» [⚠️ предложено]</td>
+                        </tr>
+                        <tr>
+                            <td>⛔ не решено</td>
+                            <td><code>false</code></td>
+                            <td>пустое</td>
+                            <td>пустое</td>
+                            <td><i>Не решено</i> [⛔ не решено]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Формат одной записи</h3>
+            <p>Каждый пункт в секциях рендерится по жёсткому шаблону:</p>
+            <pre><code>• &lt;b&gt;{title}&lt;/b&gt; [id:{messageId}] — {summary}
+  {Статус}: {text решения} [{значок}]</code></pre>
+            <p style="font-size: 13px;">
+                <strong>Гарантии:</strong> у каждой записи <strong>обязательно</strong> есть
+                <code>[id:{messageId}]</code> — это ссылка на реальное сообщение в чате.
+                Если <code>id</code> нет — тема пропускается целиком, а не выводится
+                с пустой ссылкой. Именно так обеспечивается «без выдумок».
+            </p>
+
+            <h3>Разбиение длинного дайджеста на части</h3>
+            <p>
+                Telegram ограничивает длину одного сообщения (≈4096 символов),
+                поэтому длинные дайджесты автоматически делятся на части:
+            </p>
+            <ul class="feature-list">
+                <li>
+                    <strong>MAX_LEN = 3500 символов</strong> на часть (с overhead
+                    на header/footer ~100 символов)
+                </li>
+                <li>
+                    <strong>Граница разбиения</strong> — между темами (по маркеру
+                    <code>• &lt;b&gt;</code>), тема <strong>никогда</strong> не разрезается пополам
+                </li>
+                <li>
+                    <strong>Header (только в первой части):</strong>
+                    <code>📋 Дайджест за {date}</code> +
+                    <code>📨 Сообщений обработано: {N}</code>
+                </li>
+                <li>
+                    <strong>Continuation header (в остальных):</strong>
+                    <code>📋 Дайджест за {date} (продолжение)</code>
+                </li>
+                <li>
+                    <strong>Footer (только в последней части):</strong> модель +
+                    токены + стоимость + блок диагностики ⚙️
+                </li>
+                <li>
+                    <strong>Метка части:</strong> <code>Часть N из M</code> добавляется
+                    только если M &gt; 1
+                </li>
+            </ul>
+        </section>
+
         <!-- Known limitations -->
         <section>
             <h2>Известные ограничения</h2>
