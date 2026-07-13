@@ -1795,6 +1795,123 @@ verifiedTopics.highlight = highlight;</code></pre>
             </ul>
         </section>
 
+        <!-- Config reference -->
+        <section>
+            <h2>🛠️ Config reference: что и где менять</h2>
+            <p>
+                Все настройки сосредоточены в ноде <code>Config</code> 
+                (JS-код в workflow). При переносе на другой чат нужно править:
+            </p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Где</th>
+                            <th>Что менять</th>
+                            <th>Когда</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Config.MODERATOR_IDS</code></td>
+                            <td>Словарь <code>telegram_user_id → name</code> (для метки [MOD] и отнесения тем к releases)</td>
+                            <td>Смена модераторов чата</td>
+                        </tr>
+                        <tr>
+                            <td><code>Config.LLM_PROVIDER.order</code></td>
+                            <td>Массив провайдеров по приоритету (fallback'и включены)</td>
+                            <td>Если основной провайдер недоступен</td>
+                        </tr>
+                        <tr>
+                            <td><code>Config.LLM_PROVIDER.ignore</code></td>
+                            <td>Провайдеры, которых нужно исключить (например <code>Cloudflare</code>, <code>DeepInfra</code>)</td>
+                            <td>Стабильно плохое качество от конкретного провайдера</td>
+                        </tr>
+                        <tr>
+                            <td><code>Get chat history.chatId</code> + <code>Send message1.chatId</code></td>
+                            <td>ID основного чата (источник и публичный канал)</td>
+                            <td>Перенос на другой чат</td>
+                        </tr>
+                        <tr>
+                            <td><code>Send message.chatId</code></td>
+                            <td>ID приватного чата модераторов</td>
+                            <td>Перенос на другой чат</td>
+                        </tr>
+                        <tr>
+                            <td><code>Fetch README.url</code> + <code>Fetch FAQ.url</code></td>
+                            <td>URL'ы GitHub RAW для документации</td>
+                            <td>Смена проекта / репозитория</td>
+                        </tr>
+                        <tr>
+                            <td>Системные промпты (<code>Построить запрос тем</code>, <code>Подготовить запрос критика</code> и т.д.)</td>
+                            <td>Tier-правила, anchor-паттерны, имена модераторов в промпте критика</td>
+                            <td>Смена тематики чата (другой домен, не XKeen)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- DDL digest_runs -->
+        <section>
+            <h2>🗄️ DDL таблицы <code>digest_runs</code></h2>
+            <p>
+                Каждый запуск пишется в PostgreSQL/Supabase нодой «Выполнить INSERT в digest_runs». 
+                Восстановлен по реальному INSERT из ноды «Подготовить SQL»:
+            </p>
+            <pre><code>CREATE TABLE digest_runs (
+  run_at                   TIMESTAMPTZ,
+  digest_date              DATE,
+  stages_ok                INT,
+  stages_failed            INT,
+  failed_stages            TEXT[],
+  total_prompt_tokens      INT,
+  total_completion_tokens  INT,
+  message_count            INT,
+  model                    TEXT,
+  cost                     NUMERIC(10,5),
+  validation_ok            BOOLEAN,
+  final_status             TEXT,
+  critic_parse_failed      BOOLEAN,
+  critic_fallback_used     BOOLEAN,
+  critic_removed           INT,
+  critic2_applied          INT,
+  critic2_failures         INT,
+  verif_parse_failed       BOOLEAN,
+  verif_fallback_used      BOOLEAN,
+  verif_problems_ok        INT,
+  verif_problems_ko        INT,
+  verif_tips_ok            INT,
+  verif_tips_ko            INT,
+  http_statuses            JSONB,
+  error_messages           JSONB,
+  latencies_ms             JSONB,
+  stage_log                JSONB,
+  raw_summary              JSONB
+);</code></pre>
+            <h3>Готовые запросы для мониторинга</h3>
+            <p>Топ-5 самых дорогих дней:</p>
+            <pre><code>SELECT digest_date, cost,
+       total_prompt_tokens + total_completion_tokens AS tokens
+FROM digest_runs
+WHERE run_at &gt; NOW() - INTERVAL '30 days'
+ORDER BY cost DESC NULLS LAST
+LIMIT 5;</code></pre>
+            <p>Все случаи fallback'а (по любому этапу):</p>
+            <pre><code>SELECT digest_date, final_status, failed_stages
+FROM digest_runs
+WHERE critic_fallback_used = TRUE
+   OR verif_fallback_used  = TRUE
+   OR 'verifier' = ANY(failed_stages)
+ORDER BY run_at DESC;</code></pre>
+            <p>Распределение по статусам за месяц:</p>
+            <pre><code>SELECT final_status, COUNT(*) AS runs
+FROM digest_runs
+WHERE run_at &gt; NOW() - INTERVAL '30 days'
+GROUP BY final_status
+ORDER BY runs DESC;</code></pre>
+        </section>
+
         <!-- Known limitations -->
         <section>
             <h2>Известные ограничения</h2>
