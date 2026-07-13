@@ -1261,6 +1261,158 @@ flowchart LR
             </ul>
         </section>
 
+        <!-- Cost / ROI -->
+        <section>
+            <h2>💵 Стоимость и окупаемость</h2>
+            <p>
+                Дайджест стоит дешевле чашки кофе в месяц. Экономит не от ручной модерации,
+                а от <strong>чтения</strong> — админ/участник получает только важное, не листая 145+ сообщений.
+            </p>
+
+            <h3>Реальные прогоны (production)</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Сообщений</th>
+                            <th>Тем в дайджесте</th>
+                            <th>Токены (in / out)</th>
+                            <th>Стоимость</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>03.07.2026</td>
+                            <td>204</td>
+                            <td>12 (8 + 2 + 1 + 1 highlight)</td>
+                            <td>110 492 / 25 422</td>
+                            <td>$0.01555</td>
+                        </tr>
+                        <tr>
+                            <td>09.07.2026</td>
+                            <td>145</td>
+                            <td>11 (8 + 3 + 1 highlight)</td>
+                            <td>91 424 / 32 619</td>
+                            <td>$0.01461</td>
+                        </tr>
+                        <tr>
+                            <td>11.07.2026</td>
+                            <td>145</td>
+                            <td>13 (12 + 1 + 1 highlight)</td>
+                            <td>113 650 / 44 251</td>
+                            <td>$0.01981</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Среднее</strong></td>
+                            <td><strong>~165</strong></td>
+                            <td><strong>~12</strong></td>
+                            <td><strong>~140 000</strong></td>
+                            <td><strong>~$0.017</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                <strong>В месяц (30 дней):</strong> ~$0.50<br>
+                <strong>В год:</strong> ~$6.20
+            </p>
+
+            <h3>Что экономим</h3>
+            <ul class="feature-list">
+                <li>
+                    <strong>Время чтения</strong> — без дайджеста ~10 мин/день на скролл 145+ сообщений,
+                    с дайджестом ~1–2 мин на 12 тем по одной строке
+                </li>
+                <li>
+                    <strong>Контекст</strong> — без дайджеста нужно скроллить вверх-вниз, чтобы понять,
+                    что решилось, а что висит. Дайджест даёт это в одном экране.
+                </li>
+            </ul>
+
+            <h3>Что НЕ пропустишь в дайджесте</h3>
+            <p>
+                Дайджест гарантированно подсвечивает то, что в чате часто теряется:
+            </p>
+            <ul class="feature-list">
+                <li>
+                    <strong>🏆 Releases</strong> — новые версии XKeen/Xray (иначе можно месяц не замечать анонс)
+                </li>
+                <li>
+                    <strong>⚠️ Cross-user конфликты</strong> — когда один юзер пишет «помогло»,
+                    а другой «не работает» (в чате это выглядит как 2 обычных сообщения в разных ветках)
+                </li>
+                <li>
+                    <strong>🔗 Решения из официальной документации</strong> — LLM #4 находит в README/FAQ
+                    то, что мимо чата вообще не проходило
+                </li>
+                <li>
+                    <strong>📌 Советы дня</strong> — пользовательские находки (порты, генераторы, патчи),
+                    которые в чате разбросаны по разным дням
+                </li>
+                <li>
+                    <strong>Топ-1 проблема дня</strong> (<code>highlight</code>) — выбирается по <code>msgCount</code>,
+                    не по времени публикации (без дайджеста новая проблема тонет в потоке)
+                </li>
+            </ul>
+
+            <h3>Распределение расходов по этапам (средний прогон)</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Этап</th>
+                            <th>Доля токенов</th>
+                            <th>Доля стоимости</th>
+                            <th>Зачем он нужен</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>LLM #1 — Извлечение</td>
+                            <td>~15%</td>
+                            <td>~$0.0025</td>
+                            <td>Первичный отбор тем</td>
+                        </tr>
+                        <tr>
+                            <td>LLM #2 — Критик #1</td>
+                            <td>~5%</td>
+                            <td>~$0.0008</td>
+                            <td>Валидация всего JSON</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LLM #3 — Критик #2 per-topic</strong></td>
+                            <td><strong>~60%</strong></td>
+                            <td><strong>~$0.010</strong></td>
+                            <td><strong>Глубокая проверка каждой темы</strong></td>
+                        </tr>
+                        <tr>
+                            <td>LLM #4 — Верификация по докам</td>
+                            <td>~10%</td>
+                            <td>~$0.0017</td>
+                            <td>Сверка с README/FAQ</td>
+                        </tr>
+                        <tr>
+                            <td>LLM #5 — Финальный генератор</td>
+                            <td>~10%</td>
+                            <td>~$0.0017</td>
+                            <td>HTML-текст для Telegram</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                <strong>Per-topic Критик #2</strong> — самая дорогая часть (60% токенов), но именно он
+                ловит cross-user конфликты и проверяет каждое решение по контексту.
+                Без него LLM #1 мог бы выдать ложные ✅, и читатель бы их принял на веру.
+            </p>
+            <p style="font-size: 13px; color: var(--text-secondary);">
+                <strong>Модель:</strong> <code>deepseek/deepseek-v4-flash-20260423</code> через OpenRouter<br>
+                <strong>Параметры:</strong> <code>temperature: 0</code>, <code>reasoning: { effort: "high" }</code><br>
+                <strong>Fallback-цепочка:</strong> <code>GMI → DeepSeek</code> (исключая <code>Cloudflare</code>, <code>DeepInfra</code>)
+            </p>
+        </section>
+
         <!-- Conflict detection flow -->
         <section>
             <h2>⚔️ Детекция cross-user конфликтов: как это работает</h2>
