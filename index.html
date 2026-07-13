@@ -284,6 +284,31 @@
 
         .docs-nav { font-size: var(--text-xs); }
 
+        /* Details-аккордеон для мобильного TOC */
+        .sidebar-details { padding-left: 0; }
+        .sidebar-summary {
+            display: none;
+            cursor: pointer;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text);
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            list-style: none;
+            user-select: none;
+        }
+        .sidebar-summary::before {
+            content: '▸';
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            margin-right: 8px;
+            display: inline-block;
+            transition: transform 0.15s;
+        }
+        .sidebar-details[open] .sidebar-summary::before { transform: rotate(90deg); }
+
         .docs-sidebar-title {
             font-size: var(--text-xs);
             font-weight: 700;
