@@ -220,6 +220,85 @@
             line-height: 1.4;
         }
 
+        .intro .role-group {
+            margin-bottom: 20px;
+        }
+
+        .intro .role-group:last-of-type {
+            margin-bottom: 32px;
+        }
+
+        .intro .role-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .intro .role-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .intro .role-cards { grid-template-columns: 1fr; }
+        }
+
+        .intro .role-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .intro .role-card .rc-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .intro .role-card .rc-label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .intro .role-card .rc-label.was { color: var(--accent-red); }
+        .intro .role-card .rc-label.now { color: var(--accent-green); }
+
+        .intro .role-card .rc-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .intro .card-feature {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .intro .card-feature .cf-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .intro .card-feature .cf-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .intro .card-feature .cf-text strong {
+            color: var(--text);
+        }
+
         .intro .cta-row {
             display: flex;
             gap: 12px;
