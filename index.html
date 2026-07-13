@@ -1034,6 +1034,56 @@
             </div>
         </section>
 
+        <!-- Quality funnel -->
+        <section>
+            <h2>📊 Воронка качества: от сырого лога до дайджеста</h2>
+            <p>
+                Каждый этап конвейера отсеивает часть сообщений. От <strong>1500 исходных</strong>
+                до читателя доходят только <strong>8–12 тем дня</strong> — это и есть результат
+                работы Tier 1/2 правил, двух критиков и верификатора. Цифры ниже — типичный
+                прогон (пример за 11.07.2026: 145 сообщений → 13 тем → 12 проблем + 1 tip).
+            </p>
+            <div class="mermaid-legend">
+                <span class="item"><span class="dot" style="background:#1f2937; border:1px solid #58a6ff;"></span>обработка без LLM</span>
+                <span class="item"><span class="dot" style="background:#132f1a; border:1px solid #3fb950;"></span>LLM-этапы</span>
+                <span class="item"><span class="dot" style="background:#2d2410; border:1px solid #d29922;"></span>финальный результат</span>
+            </div>
+            <div class="mermaid-container">
+<pre class="mermaid">
+flowchart TD
+    A["📥 1500 сообщений<br/>Telegram GramPro API<br/>(лимит getHistory)"]
+    B["~145 сообщений<br/>Фильтр по MSK + бот/дайджест"]
+    C["~30 якорных кандидатов<br/>Regex-фильтр жалоб"]
+    D["13 тем в JSON<br/>LLM #1 Extractor + Tier 1/2"]
+    E["13 тем<br/>LLM #2 Critic #1"]
+    F["13 тем проверено<br/>LLM #3 Critic #2 per-topic"]
+    G["13 тем<br/>LLM #4 Verifier"]
+    H["📰 12 проблем + 1 tip<br/>+ 1 highlight"]
+
+    A -->|"~90% шум"| B
+    B -->|"~80% не жалобы"| C
+    C -->|"Tier 1/2 + лимиты"| D
+    D -->|"дубли/слабые"| E
+    E -->|"per-topic защита id"| F
+    F -->|"verified / officialNote"| G
+    G -->|"highlight + остальное"| H
+
+    style A fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style B fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style C fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style D fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style E fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style F fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style G fill:#132f1a,stroke:#3fb950,color:#e6edf3
+    style H fill:#2d2410,stroke:#d29922,color:#e6edf3
+</pre>
+            </div>
+            <p class="mermaid-caption">
+                <strong>~90%</strong> сообщений отсеиваются фильтром по MSK, ещё <strong>~80%</strong> — regex-якорями.
+                Из ~30 потенциальных жалоб LLM #1 оставляет 12–13, прошедших Tier 1/2.
+            </p>
+        </section>
+
         <!-- LLM stages -->
         <section>
             <h2>Этапы LLM-конвейера</h2>
