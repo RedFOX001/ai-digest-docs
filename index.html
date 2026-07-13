@@ -237,6 +237,7 @@
         }
 
         .hero-trust:hover { border-color: var(--accent); }
+        @media (hover: none) { .hero-trust:hover { border-color: var(--border); } }
 
         .hero-trust .trust-icon { font-size: 28px; flex-shrink: 0; }
         .hero-trust .trust-text { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.4; }
@@ -846,7 +847,7 @@
                 grid-template-columns: 1fr 1fr;
                 gap: 16px;
             }
-            .hero-cta { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .hero-cta { flex-direction: column; align-items: flex-start; gap: 16px; }
             .card-grid { grid-template-columns: 1fr; }
             .pipe-node { min-width: 80px; font-size: var(--text-xs); padding: 6px 8px; }
             .pipe-arrow { font-size: var(--text-xs); }
